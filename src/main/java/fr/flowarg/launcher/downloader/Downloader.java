@@ -7,9 +7,11 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -221,7 +223,7 @@ public class Downloader
 					download(i);
 				}				
 			}
-			catch (IOException e)
+			catch (IOException | NoSuchAlgorithmException e)
 			{
 				Main.crashReporter.catchError(e, "Le launcher n'a pas pu telecharge les fichiers requis pour le lancement, veuillez verifiez votre connexion internet et votre pare-feu, si l'erreur persiste, contactez moi sur Discord.");
 				Panel.setFieldsEnabled(true);
@@ -299,18 +301,24 @@ public class Downloader
 		Panel.setText("File : " + LINK_OF_FILES.get(iterator) + " has been downloaded at : " + FILE_NAME.get(iterator) + ".");
 	}
 	
-	public static boolean verifFiles(File file, File fileToDownload)
-	{		
+	public static boolean verifFiles(File file, File fileToDownload) throws IOException, NoSuchAlgorithmException
+    {
 		if(!file.exists())
 		{
 			return false;
 		}
-		else if(fr.flowarg.launcher.FileUtils.getFileSizeBytes(file).equals(fr.flowarg.launcher.FileUtils.getFileSizeBytes(fileToDownload)))
+		else if(file.exists() && fr.flowarg.launcher.FileUtils.getFileSizeBytes(file).equals(fr.flowarg.launcher.FileUtils.getFileSizeBytes(fileToDownload)))
 		{
-			System.err.println("File : " + file + " exist but it's invalid ! Deleting it ! Error iFcBs1.");
+			System.err.println("File : " + file + " exist but it's invalid ! Deleting it ! (Invalid size).");
 			file.delete();
 			return false;
 		}
+		else if(file.exists() && !fr.flowarg.launcher.FileUtils.getMD5FromURL(fileToDownload.toURI().toURL().toString()).equals(fr.flowarg.launcher.FileUtils.getMD5ofFile(file)))
+        {
+            System.err.println("File : " + file + " exist but it's invalid ! Deleting it ! (Invalid MD5).");
+            file.delete();
+            return false;
+        }
 		else return true;
 	}
 
