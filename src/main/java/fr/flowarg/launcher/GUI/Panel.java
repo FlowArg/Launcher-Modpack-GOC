@@ -1,8 +1,8 @@
-package fr.flowarg.launcher.GUI;
+package fr.flowarg.launcher.gui;
 
-import fr.flowarg.launcher.GUI.console.ConsoleFrame.Console;
 import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.downloader.Downloader;
+import fr.flowarg.launcher.gui.console.ConsoleFrame.Console;
 import fr.litarvan.openauth.AuthenticationException;
 import fr.theshark34.openlauncherlib.LaunchException;
 import fr.theshark34.openlauncherlib.util.Saver;
@@ -13,6 +13,7 @@ import fr.theshark34.swinger.colored.SColoredBar;
 import fr.theshark34.swinger.event.SwingerEvent;
 import fr.theshark34.swinger.event.SwingerEventListener;
 import fr.theshark34.swinger.textured.STexturedButton;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -120,7 +121,7 @@ public class Panel extends JPanel implements SwingerEventListener
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void onEvent(SwingerEvent e)
+	public void onEvent(@NotNull SwingerEvent e)
 	{
 		if(e.getSource() == Panel.playButton)
 		{
@@ -204,6 +205,6 @@ public class Panel extends JPanel implements SwingerEventListener
 			} catch (LaunchException | InterruptedException e1) {
 				Main.crashReporter.catchError(e1, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher");
 			}
-		} else if (confirm == JOptionPane.CANCEL_OPTION || confirm == JOptionPane.NO_OPTION) return;
+		}
 	}
 }

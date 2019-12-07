@@ -1,7 +1,7 @@
 package fr.flowarg.launcher.downloader;
 
-import fr.flowarg.launcher.GUI.Panel;
 import fr.flowarg.launcher.Main;
+import fr.flowarg.launcher.gui.Panel;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -287,7 +287,7 @@ public class Downloader
 	}
 	
 	@SuppressWarnings("resource")
-	public static void download(int iterator) throws IOException
+	private static void download(int iterator) throws IOException
 	{
 		System.out.println("\n" + "Downloading file : " + LINK_OF_FILES.get(iterator) + "...");
 		Panel.setText("Downloading file : " + LINK_OF_FILES.get(iterator) + "...");

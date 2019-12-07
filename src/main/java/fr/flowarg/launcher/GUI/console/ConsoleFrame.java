@@ -1,6 +1,4 @@
-package fr.flowarg.launcher.GUI.console;
-
-import fr.theshark34.swinger.util.WindowMover;
+package fr.flowarg.launcher.gui.console;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,11 +14,7 @@ public class ConsoleFrame extends JFrame
 		this.setSize(600, 600);
 		this.setResizable(true);
 		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		this.setUndecorated(false);
-		WindowMover mover = new WindowMover(this);
-		this.addMouseListener(mover);
-		this.addMouseMotionListener(mover);
-		this.setVisible(true);
+		this.setVisible(false);
 	}
 	
 	public static class Console
@@ -53,6 +47,11 @@ public class ConsoleFrame extends JFrame
 		{
 			this.frame.pack();
 			this.frame.setVisible(true);
+		}
+
+		public JFrame getFrame()
+		{
+			return this.frame;
 		}
 	}
 }

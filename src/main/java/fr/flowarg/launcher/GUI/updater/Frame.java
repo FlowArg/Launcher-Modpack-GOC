@@ -1,25 +1,25 @@
-package fr.flowarg.launcher.gui;
+package fr.flowarg.launcher.gui.updater;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
 
-import com.sun.awt.AWTUtilities;
-
 import fr.theshark34.swinger.Swinger;
-import fr.theshark34.swinger.animation.Animator;
 import fr.theshark34.swinger.util.WindowMover;
 
 @SuppressWarnings("serial")
 public class Frame extends JFrame
 {
 	private static Frame instance;
+	private static Panel panel;
 	
-	public Frame(String title)
+	public Frame()
 	{
-		super(title);
+		super("Updater");
 		instance = this;
-		this.setSize(new Dimension(1920, 1080));
+		this.setBackground(Color.BLACK);
+		this.setSize(new Dimension(960, 680));
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setUndecorated(true);
@@ -29,14 +29,17 @@ public class Frame extends JFrame
 		this.addMouseListener(mover);
 		this.addMouseMotionListener(mover);
 		this.setAlwaysOnTop(false);
-		AWTUtilities.setWindowOpacity(this, 0.0f);
 		
-		this.setContentPane(new Panel());
-		Animator.fadeInFrame(this, 5);
+		this.setContentPane(panel = new Panel());
 	}
 
 	public static Frame getInstance()
 	{
 		return instance;
+	}
+	
+	public static Panel getPanel()
+	{
+		return panel;
 	}
 }
