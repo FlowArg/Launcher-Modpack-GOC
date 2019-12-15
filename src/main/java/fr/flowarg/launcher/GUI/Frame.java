@@ -1,14 +1,12 @@
 package fr.flowarg.launcher.gui;
 
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
-
 import com.sun.awt.AWTUtilities;
-
 import fr.theshark34.swinger.Swinger;
 import fr.theshark34.swinger.animation.Animator;
 import fr.theshark34.swinger.util.WindowMover;
+
+import javax.swing.*;
+import java.awt.*;
 
 @SuppressWarnings("serial")
 public class Frame extends JFrame

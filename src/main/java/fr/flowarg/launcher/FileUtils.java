@@ -1,18 +1,15 @@
 package fr.flowarg.launcher;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 @SuppressWarnings("rawtypes")
 public class FileUtils
@@ -72,11 +69,10 @@ public class FileUtils
 	
 	public static void createDirectories(String location, String... dirsToCreate) throws IOException
 	{
-		for (int i = 0; i < dirsToCreate.length; i++)
-		{
-			File f = new File(location, dirsToCreate[i]);
-			
-			if(!f.exists()) Files.createDirectory(Paths.get(location + dirsToCreate[i]));
+		for (String s : dirsToCreate) {
+			File f = new File(location, s);
+
+			if (!f.exists()) Files.createDirectory(Paths.get(location + s));
 		}
 	}
 	
@@ -169,5 +165,43 @@ public class FileUtils
 	{
 		MessageDigest md5Digest = MessageDigest.getInstance("MD5");
 		return getFileChecksum(md5Digest, file);
+	}
+
+	public static void unzipJar(String destinationDir, String jarPath) throws IOException
+	{
+		File file = new File(jarPath);
+		JarFile jar = new JarFile(file);
+
+		for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();)
+		{
+			JarEntry entry = (JarEntry) enums.nextElement();
+
+			String fileName = destinationDir + File.separator + entry.getName();
+			File f = new File(fileName);
+
+			if (fileName.endsWith("/"))
+			{
+				f.mkdirs();
+			}
+		}
+
+		for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
+			JarEntry entry = enums.nextElement();
+
+			String fileName = destinationDir + File.separator + entry.getName();
+			File f = new File(fileName);
+
+			if (!fileName.endsWith("/")) {
+				InputStream is = jar.getInputStream(entry);
+				FileOutputStream fos = new FileOutputStream(f);
+
+				while (is.available() > 0) {
+					fos.write(is.read());
+				}
+
+				fos.close();
+				is.close();
+			}
+		}
 	}
 }

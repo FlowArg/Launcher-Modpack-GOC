@@ -48,10 +48,5 @@ public class ConsoleFrame extends JFrame
 			this.frame.pack();
 			this.frame.setVisible(true);
 		}
-
-		public JFrame getFrame()
-		{
-			return this.frame;
-		}
 	}
 }

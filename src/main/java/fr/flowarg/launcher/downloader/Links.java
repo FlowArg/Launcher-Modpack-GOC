@@ -2,8 +2,6 @@ package fr.flowarg.launcher.downloader;
 
 public class Links
 {
-	public static final String NATIVES = "https://flowarg.github.io/minecraft/launcher/natives/1.12.2/";
-
 	public static final String VERSIONS_INDEX = "https://launchermeta.mojang.com/v1/packages/6e69e85d0f85f4f4b9e12dd99d102092a6e15918/1.12.2.json";
 	public static final String ASSETS_INDEX = "https://launchermeta.mojang.com/v1/packages/1584b57c1a0b5e593fad1f5b8f78536ca640547b/1.12.json";
 	
@@ -73,15 +71,12 @@ public class Links
 	public static final String TEXTTOSPEECH = "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3.jar";
 	public static final String LWJGL = "https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl/2.9.4-nightly-20150209/lwjgl-2.9.4-nightly-20150209.jar";
 	public static final String LWJGL_UTIL = "https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl_util/2.9.4-nightly-20150209/lwjgl_util-2.9.4-nightly-20150209.jar";
-	public static final String NATIVE_1 = NATIVES + "lwjgl.dll";
-	public static final String NATIVE_2 = NATIVES + "lwjgl64.dll";
-	public static final String NATIVE_3 = NATIVES + "OpenAL64.dll";
-	public static final String NATIVE_4 = NATIVES + "OpenAL32.dll";
-	public static final String NATIVE_5 = NATIVES + "jinput-wintab.dll";
-	public static final String NATIVE_6 = NATIVES + "jinput-raw_64.dll";
-	public static final String NATIVE_7 = NATIVES + "jinput-raw.dll";
-	public static final String NATIVE_8 = NATIVES + "jinput-dx8_64.dll";
-	public static final String NATIVE_9 = NATIVES + "jinput-dx8.dll";
-	public static final String NATIVE_10 = NATIVES + "SAPIWrapper_x86.dll";
-	public static final String NATIVE_11 = NATIVES + "SAPIWrapper_x64.dll";
+	public static final String TEST_NATIVE_1_WIN = "https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-nightly-20150209/lwjgl-platform-2.9.4-nightly-20150209-natives-windows.jar";
+	public static final String TEST_NATIVE_1_LINUX = "https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-nightly-20150209/lwjgl-platform-2.9.4-nightly-20150209-natives-linux.jar";
+	public static final String TEST_NATIVE_1_OSX = "https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-nightly-20150209/lwjgl-platform-2.9.4-nightly-20150209-natives-osx.jar";
+	public static final String TEST_NATIVE_2_WIN = "https://libraries.minecraft.net/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-windows.jar";
+	public static final String TEST_NATIVE_2_LINUX = "https://libraries.minecraft.net/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-linux.jar";
+	public static final String TEST_NATIVE_2_OSX = "https://libraries.minecraft.net/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-osx.jar";
+	public static final String TEST_NATIVE_3_WIN = "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3-natives-windows.jar";
+	public static final String TEST_NATIVE_3_LINUX = "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3-natives-linux.jar";
 }

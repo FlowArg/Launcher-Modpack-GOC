@@ -2,24 +2,23 @@ package fr.flowarg.launcher.downloader;
 
 import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.gui.Panel;
+import fr.flowarg.launcher.interfaces.IDownloader;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Downloader
+public class Downloader implements IDownloader
 {
-	public static List<String> LINK_OF_FILES = new ArrayList<>(61);
-	public static List<String> FILE_NAME = new ArrayList<>(61);
-	private static int NMBR_OF_FILES = 0;
+	public static List<String> LINK_OF_FILES = new ArrayList<>();
+	public static List<String> FILE_NAME = new ArrayList<>();
+	private static int NUMBER_OF_FILES = 0;
 	
 	public void init()
 	{
@@ -76,18 +75,24 @@ public class Downloader
 		ll(Links.TEXTTOSPEECH);
 		ll(Links.LWJGL);
 		ll(Links.LWJGL_UTIL);
-		
-		ll(Links.NATIVE_1);
-		ll(Links.NATIVE_2);
-		ll(Links.NATIVE_3);
-		ll(Links.NATIVE_4);
-		ll(Links.NATIVE_5);
-		ll(Links.NATIVE_6);
-		ll(Links.NATIVE_7);
-		ll(Links.NATIVE_8);
-		ll(Links.NATIVE_9);
-		ll(Links.NATIVE_10);
-		ll(Links.NATIVE_11);
+
+		if(System.getProperty("os.name").toLowerCase().contains("win"))
+		{
+			ll(Links.TEST_NATIVE_1_WIN);
+			ll(Links.TEST_NATIVE_2_WIN);
+			ll(Links.TEST_NATIVE_3_WIN);
+		}
+		else if(System.getProperty("os.name").toLowerCase().contains("mac"))
+		{
+			ll(Links.TEST_NATIVE_1_OSX);
+			ll(Links.TEST_NATIVE_2_OSX);
+		}
+		else
+		{
+			ll(Links.TEST_NATIVE_1_LINUX);
+			ll(Links.TEST_NATIVE_2_LINUX);
+			ll(Links.TEST_NATIVE_3_LINUX);
+		}
 
 		ll(Links.MOD_JEI);
 		ll(Links.MOD_LUNATRIUS_CORE);
@@ -105,7 +110,7 @@ public class Downloader
 		ll(Links.MOD_NETHEREX);
 		ll(Links.MOD_LIBRARYEX);
 		
-		NMBR_OF_FILES = 0;
+		NUMBER_OF_FILES = 0;
 		System.out.println("Initializing Libraries list...");
 		fl(Names.VERSIONS_INDEX);
 		fl(Names.ASSETS_INDEX);
@@ -162,17 +167,23 @@ public class Downloader
 		fl(Names.LWJGL_UTIL);
 
 		System.out.println("Initializing Natives list...");
-		fl(Names.NATIVE_1);
-		fl(Names.NATIVE_2);
-		fl(Names.NATIVE_3);
-		fl(Names.NATIVE_4);
-		fl(Names.NATIVE_5);
-		fl(Names.NATIVE_6);
-		fl(Names.NATIVE_7);
-		fl(Names.NATIVE_8);
-		fl(Names.NATIVE_9);
-		fl(Names.NATIVE_10);
-		fl(Names.NATIVE_11);
+		if(System.getProperty("os.name").toLowerCase().contains("win"))
+		{
+			fl(Names.TEST_NATIVE_1_WIN);
+			fl(Names.TEST_NATIVE_2_WIN);
+			fl(Names.TEST_NATIVE_3_WIN);
+		}
+		else if(System.getProperty("os.name").toLowerCase().contains("mac"))
+		{
+			fl(Names.TEST_NATIVE_1_OSX);
+			fl(Names.TEST_NATIVE_2_OSX);
+		}
+		else
+		{
+			fl(Names.TEST_NATIVE_1_LINUX);
+			fl(Names.TEST_NATIVE_2_LINUX);
+			fl(Names.TEST_NATIVE_3_LINUX);
+		}
 
 		System.out.println("Initializing Mods list...");
 		fl(Names.MOD_JEI);
@@ -194,22 +205,23 @@ public class Downloader
 	
 	private static void ll(String e)
 	{
-		LINK_OF_FILES.add(NMBR_OF_FILES, e);
-		++NMBR_OF_FILES;
+		LINK_OF_FILES.add(NUMBER_OF_FILES, e);
+		++NUMBER_OF_FILES;
 	}
 	
 	private static void fl(String e)
 	{
-		FILE_NAME.add(NMBR_OF_FILES, e);
-		++NMBR_OF_FILES;
+		FILE_NAME.add(NUMBER_OF_FILES, e);
+		++NUMBER_OF_FILES;
 	}
-	
-	public static void start()
+
+	@Override
+	public void start()
 	{
 		System.out.println("Downloading files...");
 		Panel.setText("Downloading files...");
 		
-		for (int i = 0; i < NMBR_OF_FILES; i++)
+		for (int i = 0; i < NUMBER_OF_FILES; i++)
 		{
 			try
 			{
@@ -217,15 +229,15 @@ public class Downloader
 				File fileToDownload = new File(LINK_OF_FILES.get(i));
 				File folder = file.getParentFile();
 				folder.mkdirs();
-				
-				if(!verifFiles(file, fileToDownload))
+
+				if(!verifyFiles(file, fileToDownload))
 				{
 					download(i);
-				}				
+				}
 			}
-			catch (IOException | NoSuchAlgorithmException e)
+			catch (IOException e)
 			{
-				Main.crashReporter.catchError(e, "Le launcher n'a pas pu telecharge les fichiers requis pour le lancement, veuillez verifiez votre connexion internet et votre pare-feu, si l'erreur persiste, contactez moi sur Discord.");
+				Main.crashReporter.catchError(e, "Le launcher n'a pas pu telecharge les fichiers requis pour le lancement, veuillez verifier votre connexion internet et votre pare-feu, si l'erreur persiste, contactez moi sur Discord.");
 				Panel.setFieldsEnabled(true);
 			}
 		}
@@ -246,9 +258,6 @@ public class Downloader
 			
 			File skinsS = new File(Names.DIR + ".minecraft/assets/skins");
 			File skinsT = new File(Main.GAME_DIR + "/common/assets/skins");
-			
-			File virtualS = new File(Names.DIR + ".minecraft/assets/virtual");
-			File virtualT = new File(Main.GAME_DIR + "/common/assets/virtual");
 
 			if(!objectsT.exists())
 			{
@@ -268,28 +277,47 @@ public class Downloader
 					FileUtils.copyDirectory(skinsS, skinsT);
 				}
 			}
-
-			Panel.setText("Verifying virtuals...");
-			System.out.println("Verifying virtuals...");
-			if(!virtualT.exists())
-			{
-				Panel.setText("Copying virtuals...");
-				System.out.println("Copying virtuals...");
-				FileUtils.copyDirectory(virtualS, virtualT);
-			}			
 		}
 		catch (IOException e)
 		{
-			Main.crashReporter.catchError(e, "Erreur dans la copie des fichiers, veuillez verifiez l'existance des dossiers dans votre .minecraft : assets/objects, assets/skins (optional), assets/virtual et assurez vous d'avoir lancer au moins une fois, une version 1.12.2 du jeu.");
+			Main.crashReporter.catchError(e, "Erreur dans la copie des fichiers, veuillez verifier l'existance des dossiers dans votre .minecraft : assets/objects, assets/skins (optional) et assurez vous d'avoir lancer au moins une fois, une version 1.12.2 du jeu.");
 			Panel.setFieldsEnabled(true);
-		}	
+		}
+
+		try
+		{
+			System.out.println("Extracting natives...");
+			Panel.setText("Extracting natives...");
+			if(System.getProperty("os.name").toLowerCase().contains("win"))
+			{
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_1_WIN);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_2_WIN);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_3_WIN);
+			}
+			else if(System.getProperty("os.name").toLowerCase().contains("mac"))
+			{
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_1_OSX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_2_OSX);
+			}
+			else
+			{
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_1_LINUX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_2_LINUX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_3_LINUX);
+			}
+			FileUtils.deleteDirectory(new File(Names.NATIVES + "META-INF\\"));
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 
 		System.out.println("All files are completely verified and downloaded !");
 		Panel.setText("All files are completely verified and downloaded !");
 	}
-	
+
+	@Override
 	@SuppressWarnings("resource")
-	private static void download(int iterator) throws IOException
+	public void download(int iterator) throws IOException
 	{
 		System.out.println("\n" + "Downloading file : " + LINK_OF_FILES.get(iterator) + "...");
 		Panel.setText("Downloading file : " + LINK_OF_FILES.get(iterator) + "...");
@@ -301,7 +329,7 @@ public class Downloader
 		Panel.setText("File : " + LINK_OF_FILES.get(iterator) + " has been downloaded at : " + FILE_NAME.get(iterator) + ".");
 	}
 	
-	public static boolean verifFiles(File file, File fileToDownload) throws IOException, NoSuchAlgorithmException
+	public static boolean verifyFiles(File file, File fileToDownload)
     {
 		if(!file.exists())
 		{
@@ -313,17 +341,18 @@ public class Downloader
 			file.delete();
 			return false;
 		}
-		else if(file.exists() && !fr.flowarg.launcher.FileUtils.getMD5FromURL(fileToDownload.toURI().toURL().toString()).equals(fr.flowarg.launcher.FileUtils.getMD5ofFile(file)))
-        {
-            System.err.println("File : " + file + " exist but it's invalid ! Deleting it ! (Invalid MD5).");
-            file.delete();
-            return false;
-        }
 		else return true;
 	}
 
-	public static int getNmbrOfFiles()
+	@Override
+	public int getId()
 	{
-		return NMBR_OF_FILES;
+		return 0;
+	}
+
+	@Override
+	public String getName()
+	{
+		return "Downloader of GameFiles";
 	}
 }

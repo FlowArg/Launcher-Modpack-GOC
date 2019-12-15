@@ -1,7 +1,6 @@
 package fr.flowarg.launcher.gui;
 
 import fr.flowarg.launcher.Main;
-import fr.flowarg.launcher.downloader.Downloader;
 import fr.flowarg.launcher.gui.console.ConsoleFrame.Console;
 import fr.litarvan.openauth.AuthenticationException;
 import fr.theshark34.openlauncherlib.LaunchException;
@@ -28,23 +27,23 @@ public class Panel extends JPanel implements SwingerEventListener
 	private STexturedButton hideButton = new STexturedButton(Swinger.getResource("hide.png"));
 	
 	private static JLabel labelForBar = new JLabel("Clique sur play !", SwingConstants.CENTER);
-	private SColoredBar bar = new SColoredBar(Color.RED, Color.GREEN);
-	
+
 	private static Saver saver = new Saver(new File(Main.GAME_DIR, "launcher.properties"));
 	private static JTextField usernameField = new JTextField(saver.get("username"));
 	private static JPasswordField passwordField = new JPasswordField(saver.get("password"));
+	private STexturedButton viewPassword = new STexturedButton(Swinger.getResource("viewPassword.png"));
 	
 	private static RamSelector ramSelector = new RamSelector(new File(Main.GAME_DIR, "ram.txt"));
 	private STexturedButton ramButton = new STexturedButton(Swinger.getResource("ram.png"));
 	
 	private Font textFontBasic = new Font("SansSerif", Font.BOLD, 30);
-	private Font passwordFontBasic = new Font("Calibri", Font.CENTER_BASELINE, 20);
+	private Font passwordFontBasic = new Font("Calibri", Font.BOLD, 20);
 	
 	private Image background = Swinger.getResource("background.png");
 	
 	public Panel()
 	{
-		int confirm = JOptionPane.showConfirmDialog(this, "Attention, vous devrez lancer auparavant le launcher officiel de Minecraft et une version en 1.12.2 avant de lancer celui-ci, sinon vous allez ne pas pouvoir lancer le jeu. Merci de votre compréhension.", "Attention !!!", JOptionPane.WARNING_MESSAGE);
+		int confirm = JOptionPane.showConfirmDialog(this, "Attention, vous devrez lancer auparavant le launcher officiel de Minecraft et une version en 1.12.2 avant de lancer celui-ci, sinon vous n'allez pas pouvoir lancer le jeu. Merci de votre compréhension.", "Attention !!!", JOptionPane.OK_CANCEL_OPTION);
 		if(confirm != JOptionPane.OK_OPTION) Main.exit(0);
 		
 		this.setLayout(null);
@@ -66,15 +65,19 @@ public class Panel extends JPanel implements SwingerEventListener
 		Panel.passwordField.setBounds((int)(3113 / 2.4), (int)(1978 / 3.2), (int)(1140 / 2.4), (int)(275 / 3.2));
 		this.setGood(passwordField);
 		Panel.passwordField.setVisible(true);
+
+		this.viewPassword.setBounds((int)(2983 / 2.4), (int)(2028 / 3.2));
+		this.viewPassword.setVisible(true);
 		
-		Panel.playButton.setBounds((int)(3203 / 2.4), (int)(2417 / 3.2));;
+		Panel.playButton.setBounds((int)(3203 / 2.4), (int)(2417 / 3.2));
 		Panel.playButton.setVisible(true);
 		
 		this.consoleButton.setBounds(0, 0);
 		this.consoleButton.setVisible(true);
-		
-		this.bar.setBounds(0, (int)(3446 / 3.2), (int)(4608 / 2.4), 11);
-		this.bar.setVisible(true);
+
+		SColoredBar bar = new SColoredBar(Color.RED, Color.GREEN);
+		bar.setBounds(0, (int)(3446 / 3.2), (int)(4608 / 2.4), 11);
+		bar.setVisible(true);
 		
 		Panel.labelForBar.setBounds(0, (int)(3300 / 3.2), (int)(4598 / 2.4), 48);
 		Panel.labelForBar.setFont(textFontBasic);
@@ -87,15 +90,17 @@ public class Panel extends JPanel implements SwingerEventListener
 		this.add(this.consoleButton);
 		this.add(Panel.usernameField);
 		this.add(Panel.passwordField);
-		this.add(this.bar);
+		this.add(bar);
 		this.add(this.ramButton);
 		this.add(Panel.labelForBar);
+		this.add(this.viewPassword);
 		
 		this.consoleButton.addEventListener(this);
 		this.quitButton.addEventListener(this);
 		this.hideButton.addEventListener(this);
 		this.ramButton.addEventListener(this);
 		Panel.playButton.addEventListener(this);
+		this.viewPassword.addEventListener(this);
 		
 		this.setVisible(true);
 	}
@@ -129,7 +134,8 @@ public class Panel extends JPanel implements SwingerEventListener
 			
 			if(usernameField.getText().replaceAll(" ", "").length() == 0 || passwordField.getText().length() == 0)
 			{
-				JOptionPane.showMessageDialog(this, "Veuillez entrer un mot de passe et un e-mail (ou pseudo).", "Erreur", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Veuillez entrer un mot de passe et un e-mail.", "Erreur", JOptionPane.ERROR_MESSAGE);
+				System.out.println("Erreur : Veuillez entrer un mot de passe et un e-mail.");
 				Panel.setFieldsEnabled(true);
 				return;
 			}
@@ -166,6 +172,12 @@ public class Panel extends JPanel implements SwingerEventListener
 			ramSelector.setFile(new File(Main.GAME_DIR, "ram.txt"));
 			ramSelector.save();
 		}
+		else if(e.getSource() == this.viewPassword)
+		{
+			if(passwordField.getEchoChar() != (char)0) passwordField.setEchoChar((char)0);
+			else passwordField.setEchoChar('*');
+		}
+		else passwordField.setEchoChar((char)0);
 	}
 	
 	public static void setFieldsEnabled(boolean enabled)
@@ -187,24 +199,27 @@ public class Panel extends JPanel implements SwingerEventListener
 	@SuppressWarnings("deprecation")
 	private void start()
 	{
-		int confirm = JOptionPane.showConfirmDialog(Panel.this, "Le launcher va telecharger des fichiers, nous vous conseillons d'être connecté à internet par wifi / cable et d'éviter les réseaux satellites. Cliquez sur ok pour continuer !", "Warning : Telechargement", JOptionPane.WARNING_MESSAGE);
+		int confirm = JOptionPane.showConfirmDialog(Panel.this, "Le launcher va telecharger des fichiers, nous vous conseillons d'être connecté à internet par wifi / cable et d'éviter les réseaux satellites pour éviter de payer tous frais de forfaits suplémentaires. Cliquez sur ok pour continuer !", "Warning : Telechargement", JOptionPane.OK_CANCEL_OPTION);
 
 		if (confirm == JOptionPane.OK_OPTION) {
 			try {
 				Main.auth(usernameField.getText(), passwordField.getText());
-			} catch (AuthenticationException e1) {
+			} catch (AuthenticationException e) {
 				JOptionPane.showMessageDialog(Panel.this, "Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+				System.out.println("Erreur de connexion : Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.");
 				Panel.setFieldsEnabled(true);
 				return;
 			}
-			Downloader.start();
+			System.out.println("Starting " + Main.DOWNLOADER.getName() + " Downloader, wait please...");
+			Main.DOWNLOADER.start();
 			System.out.println("Launching game...");
 			Panel.setText("Launching game...");
 			try {
 				Main.launch();
-			} catch (LaunchException | InterruptedException e1) {
-				Main.crashReporter.catchError(e1, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher");
+			} catch (LaunchException | InterruptedException e) {
+				Main.crashReporter.catchError(e, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher");
 			}
 		}
+		else setFieldsEnabled(true);
 	}
 }

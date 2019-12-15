@@ -1,23 +1,17 @@
 package fr.flowarg.launcher.gui.updater;
 
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
-
 import fr.theshark34.swinger.Swinger;
 import fr.theshark34.swinger.util.WindowMover;
+
+import javax.swing.*;
+import java.awt.*;
 
 @SuppressWarnings("serial")
 public class Frame extends JFrame
 {
-	private static Frame instance;
-	private static Panel panel;
-	
 	public Frame()
 	{
 		super("Updater");
-		instance = this;
 		this.setBackground(Color.BLACK);
 		this.setSize(new Dimension(960, 680));
 		this.setLocationRelativeTo(null);
@@ -30,16 +24,6 @@ public class Frame extends JFrame
 		this.addMouseMotionListener(mover);
 		this.setAlwaysOnTop(false);
 		
-		this.setContentPane(panel = new Panel());
-	}
-
-	public static Frame getInstance()
-	{
-		return instance;
-	}
-	
-	public static Panel getPanel()
-	{
-		return panel;
+		this.setContentPane(new Panel());
 	}
 }
