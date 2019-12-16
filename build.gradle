@@ -11,7 +11,7 @@ compileJava {
 }
 
 group 'fr.flowarg'
-version '1.2.4'
+version '1.2.5'
 
 repositories {
 	jcenter()
@@ -20,6 +20,11 @@ repositories {
 	{
 		name = "Litarvan maven"
 		url = "https://litarvan.github.io/maven/"
+	}
+	maven
+	{
+		name = "FlowArg's maven"
+		url = "https://flowarg.github.io/maven/"
 	}
 }
 
@@ -31,6 +36,8 @@ dependencies {
 	compile 'commons-io:commons-io:2.6'
 	compile 'org.jetbrains:annotations:17.0.0'
 	compile 'org.apache.commons:commons-lang3:3.8.1'
+	compile 'fr.arinonia:launcherlib:1.0'
+	compile 'commons-codec:commons-codec:1.9'
 }
 
 application {

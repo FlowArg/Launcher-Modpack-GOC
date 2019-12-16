@@ -270,6 +270,16 @@ public class FileUtils
 		return null;
 	}
 
+	public static String getSHA1(final URL url) throws IOException
+	{
+		String tempDir = System.getProperty("user.home") + "\\AppData\\Local\\Temp\\";
+		File tempFile = new File(tempDir + url.getFile());
+		org.apache.commons.io.FileUtils.copyURLToFile(url, tempFile);
+		String sha1 = FileUtils.getSHA1(tempFile);
+		if(!tempFile.delete()) org.apache.commons.io.FileUtils.forceDelete(tempFile);
+		return sha1;
+	}
+
 	public static ArrayList<File> listFilesForFolder(final File folder)
 	{
 		final ArrayList<File> files = new ArrayList<>();

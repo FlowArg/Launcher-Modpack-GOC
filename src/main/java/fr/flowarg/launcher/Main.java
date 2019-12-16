@@ -17,6 +17,7 @@
 package fr.flowarg.launcher;
 
 import fr.flowarg.launcher.downloader.Downloader;
+import fr.flowarg.launcher.downloader.Names;
 import fr.flowarg.launcher.gui.GFrame;
 import fr.flowarg.launcher.gui.GPanel;
 import fr.flowarg.launcher.updater.Updater;
@@ -31,8 +32,11 @@ import fr.theshark34.openlauncherlib.external.ExternalLauncher;
 import fr.theshark34.openlauncherlib.minecraft.*;
 import fr.theshark34.openlauncherlib.util.CrashReporter;
 import fr.theshark34.swinger.Swinger;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 
 /**
@@ -44,7 +48,7 @@ import java.util.Arrays;
  */
 public class Main
 {
-	public static final String ACTUAL_VERSION = "1.2.3";
+	public static final String ACTUAL_VERSION = "1.2.5";
 	public static final GameVersion VERSION = new GameVersion("1.12.2", GameType.V1_8_HIGHER);
 	public static final GameInfos INFOS = new GameInfos("gunsofchickens-modpack", VERSION, new GameTweak[] {GameTweak.FORGE});
 	public static final File GAME_DIR = INFOS.getGameDir();
@@ -63,6 +67,13 @@ public class Main
 		System.out.println("Verifying available updates...");
 		UPDATER.start();
 		System.out.println("Initializing launcher..");
+		try
+		{
+			FileUtils.copyURLToFile(new URL("https://flowarg.github.io/minecraft/launcher/sha1s.json"), new File(Names.COMMON + "sha1s.json"));
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 		DOWNLOADER.init();
 		System.out.println("Launching Window for " + System.getProperty("os.name") + " os.");
 		GFrame frame = new GFrame("Launcher By FlowArg");
@@ -94,6 +105,11 @@ public class Main
 	public static void exit(int status)
 	{
 		System.out.println("Exit with exit code " + status + ".");
+		File tempDir = new File(System.getProperty("user.home") + "\\AppData\\Local\\Temp\\");
+		try
+		{
+			FileUtils.cleanDirectory(tempDir);
+		} catch (IOException ignored) {}
 		if(!Downloader.FILE_NAME.isEmpty()) Downloader.FILE_NAME.clear();
 		if(!Downloader.LINK_OF_FILES.isEmpty()) Downloader.LINK_OF_FILES.clear();
 		System.exit(status);

@@ -128,6 +128,9 @@ public class GPanel extends JPanel implements SwingerEventListener
 		if(e.getSource() == GPanel.playButton)
 		{
 			GPanel.setFieldsEnabled(false);
+			this.viewPassword.setVisible(false);
+			this.ramButton.setVisible(false);
+			this.consoleButton.setVisible(false);
 			
 			if(usernameField.getText().replaceAll(" ", "").length() == 0 || passwordField.getText().length() == 0)
 			{
@@ -172,7 +175,7 @@ public class GPanel extends JPanel implements SwingerEventListener
 		else if(e.getSource() == this.viewPassword)
 		{
 			if(passwordField.getEchoChar() != (char)0) passwordField.setEchoChar((char)0);
-			else passwordField.setEchoChar('*');
+			else passwordField.setEchoChar('•');
 		}
 		else passwordField.setEchoChar((char)0);
 	}

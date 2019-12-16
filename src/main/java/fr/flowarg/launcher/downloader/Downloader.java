@@ -5,6 +5,7 @@ import fr.arinonia.launcherlib.updater.versions.AssetIndex;
 import fr.arinonia.launcherlib.updater.versions.AssetIndexInfo;
 import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.gui.GPanel;
+import fr.flowarg.launcher.sha1.SHA1Manager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -20,7 +21,7 @@ public class Downloader
 {
 	public static List<String> LINK_OF_FILES = new ArrayList<>();
 	public static List<String> FILE_NAME = new ArrayList<>();
-	private static int NUMBER_OF_FILES = 0;
+	public static int NUMBER_OF_FILES = 0;
 	
 	public void init()
 	{
@@ -219,19 +220,22 @@ public class Downloader
 
 	public void start()
 	{
-		System.out.println("Downloading files...");
-		GPanel.setText("Downloading files...");
+		System.out.println("Verifying files...");
+		GPanel.setText("Verifying files...");
 		
 		for (int i = 0; i < NUMBER_OF_FILES; i++)
 		{
 			try
 			{
+				SHA1Manager manager = new SHA1Manager();
 				File file = new File(FILE_NAME.get(i));
 				File fileToDownload = new File(LINK_OF_FILES.get(i));
 				File folder = file.getParentFile();
 				folder.mkdirs();
+				String sha1 = manager.getSha1().get(i);
 
-				if(verifyFiles(file, fileToDownload))
+
+				if(!isLibFileValid(file, fileToDownload, sha1))
 				{
 					System.out.println("\n" + "Downloading file : " + LINK_OF_FILES.get(i) + "...");
 					GPanel.setText("Downloading file : " + LINK_OF_FILES.get(i) + "...");
@@ -258,31 +262,45 @@ public class Downloader
 		System.out.println("Verifying objects...");
 		this.downloadResources();
 
+		String N1;
+		String N2;
+		String N3;
+
+		String N = Names.NATIVES;
+
 		try
 		{
 			System.out.println("Extracting natives...");
 			GPanel.setText("Extracting natives...");
 			if(System.getProperty("os.name").toLowerCase().contains("win"))
 			{
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_1_WIN);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_2_WIN);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_3_WIN);
+				N1 = Names.NATIVE_1_WIN;
+				N2 = Names.NATIVE_2_WIN;
+				N3 = Names.NATIVE_3_WIN;
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N1);
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N2);
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N3);
 			}
 			else if(System.getProperty("os.name").toLowerCase().contains("mac"))
 			{
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_1_OSX);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_2_OSX);
+				N1 = Names.NATIVE_1_OSX;
+				N2 = Names.NATIVE_2_OSX;
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N1);
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N2);
 			}
 			else
 			{
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_1_LINUX);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_2_LINUX);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_3_LINUX);
+				N1 = Names.NATIVE_1_LINUX;
+				N2 = Names.NATIVE_2_LINUX;
+				N3 = Names.NATIVE_3_LINUX;
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N1);
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N2);
+				fr.flowarg.launcher.FileUtils.unzipJar(N, N3);
 			}
 			FileUtils.deleteDirectory(new File(Names.NATIVES + "META-INF\\"));
 		} catch (IOException e)
 		{
-			e.printStackTrace();
+			Main.crashReporter.catchError(e, "Le launcher a rencontre une erreur lors de l'extraction des natives, relancez le launcher voir l'ordinateur complet. Si le soucis persistes, contactez moi sur Discord.");
 		}
 
 		System.out.println("All files are completely verified and downloaded !");
@@ -321,10 +339,10 @@ public class Downloader
 				final String filename = object.getHash().substring(0, 2) + "/" + object.getHash();
 				String url = "http://resources.download.minecraft.net/" + filename;
 				final File file = new File(objectsFolder, filename);
-				if(verifyFiles(file, new File(url)))
+				if(!isFileValid(file, new File(url)))
 				{
-					System.out.println("Downloading : " + url + " .");
-					GPanel.setText("Downloading : " + url + " .");
+					System.out.println("Downloading : " + url + "...");
+					GPanel.setText("Downloading : " + url + "...");
 					FileUtils.copyURLToFile(new URL(url), file);
 				}
 			}
@@ -340,18 +358,24 @@ public class Downloader
 		IOUtils.closeQuietly(stream);
 	}
 	
-	public static boolean verifyFiles(File file, File fileToDownload)
-    {
+	public static boolean isLibFileValid(File file, File fileToDownload, String sha1) throws IOException
+	{
+		if(!isFileValid(file, fileToDownload)) return false;
+		else return sha1.equals(fr.flowarg.launcher.FileUtils.getSHA1(file));
+	}
+
+	public static boolean isFileValid(File file, File fileToDownload) throws IOException
+	{
 		if(!file.exists())
 		{
-			return true;
+			return false;
 		}
 		else if(file.exists() && fr.flowarg.launcher.FileUtils.getFileSizeBytes(file).equals(fr.flowarg.launcher.FileUtils.getFileSizeBytes(fileToDownload)))
 		{
 			System.err.println("File : " + file + " exist but it's invalid ! Deleting it ! (Invalid size).");
-			file.delete();
-			return true;
+			if(!file.delete()) FileUtils.forceDelete(file);
+			return false;
 		}
-		else return false;
+		else return true;
 	}
 }
