@@ -1,19 +1,23 @@
-package fr.flowarg.launcher.gui.updater;
+package fr.flowarg.launcher.gui;
 
+import com.sun.awt.AWTUtilities;
 import fr.theshark34.swinger.Swinger;
+import fr.theshark34.swinger.animation.Animator;
 import fr.theshark34.swinger.util.WindowMover;
 
 import javax.swing.*;
 import java.awt.*;
 
 @SuppressWarnings("serial")
-public class Frame extends JFrame
+public class GFrame extends JFrame
 {
-	public Frame()
+	private static GFrame instance;
+	
+	public GFrame(String title)
 	{
-		super("Updater");
-		this.setBackground(Color.BLACK);
-		this.setSize(new Dimension(960, 680));
+		super(title);
+		instance = this;
+		this.setSize(new Dimension(1920, 1080));
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setUndecorated(true);
@@ -23,7 +27,14 @@ public class Frame extends JFrame
 		this.addMouseListener(mover);
 		this.addMouseMotionListener(mover);
 		this.setAlwaysOnTop(false);
+		AWTUtilities.setWindowOpacity(this, 0.0f);
 		
-		this.setContentPane(new Panel());
+		this.setContentPane(new GPanel());
+		Animator.fadeInFrame(this, 5);
+	}
+
+	public static GFrame getInstance()
+	{
+		return instance;
 	}
 }

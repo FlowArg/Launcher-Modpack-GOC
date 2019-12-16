@@ -1,5 +1,8 @@
 package fr.flowarg.launcher;
 
+import fr.arinonia.launcherlib.launchlib.exceptions.ErrorException;
+
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -7,6 +10,7 @@ import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -14,6 +18,24 @@ import java.util.jar.JarFile;
 @SuppressWarnings("rawtypes")
 public class FileUtils
 {
+	public static String getFileExtension(final File file)
+	{
+		final String fileName = file.getName();
+		final int dotIndex = fileName.lastIndexOf(46);
+		return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
+	}
+
+	public static String removeExtension(final String fileName)
+	{
+		if (fileName == null) {
+			return "";
+		}
+		if (!getFileExtension(new File(fileName)).isEmpty()) {
+			return fileName.substring(0, fileName.lastIndexOf(46));
+		}
+		return fileName;
+	}
+
     public static void createFile(File file) throws IOException
     {
         if (!file.exists())
@@ -52,19 +74,38 @@ public class FileUtils
         return "";
     }
     
-	public static void deleteDirectory(File file)
+	public static void deleteDirectory(final File folder)
 	{
-		if (file.isDirectory() && file.exists())
+		if (folder.exists() && folder.isDirectory())
 		{
-			File[] entries = file.listFiles();
-		    if (entries != null)
-		    {
-		      for (File entry : entries)
-		      {
-		        deleteDirectory(entry);
-		      }
-		    }
-		 }
+			final ArrayList<File> files = listFilesForFolder(folder);
+			if (files.isEmpty()) {
+				folder.delete();
+				return;
+			}
+			for (final File f : files) {
+				f.delete();
+			}
+			folder.delete();
+		}
+	}
+
+	public static ArrayList<File> listRecursive(File directory)
+	{
+		ArrayList<File> files = new ArrayList<File>();
+		File[] fs = directory.listFiles();
+		if (fs == null)
+			return files;
+
+		for (File f : fs)
+		{
+			if (f.isDirectory())
+				files.addAll(listRecursive(f));
+
+			files.add(f);
+		}
+
+		return files;
 	}
 	
 	public static void createDirectories(String location, String... dirsToCreate) throws IOException
@@ -203,5 +244,59 @@ public class FileUtils
 				is.close();
 			}
 		}
+	}
+
+	public static String getSHA1(final File file) {
+		try {
+			final InputStream input = new FileInputStream(file);
+			try {
+				final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+				final byte[] buffer = new byte[8192];
+				for (int len = input.read(buffer); len != -1; len = input.read(buffer)) {
+					sha1.update(buffer, 0, len);
+				}
+				return new HexBinaryAdapter().marshal(sha1.digest()).toLowerCase();
+			} catch (Exception e) {
+				e.printStackTrace();
+
+			} finally {
+				if (input != null) {
+					input.close();
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static ArrayList<File> listFilesForFolder(final File folder)
+	{
+		final ArrayList<File> files = new ArrayList<>();
+		File[] listFiles;
+		for (int length = (listFiles = folder.listFiles()).length, i = 0; i < length; ++i)
+		{
+			final File fileEntry = listFiles[i];
+			if (fileEntry.isDirectory()) {
+				files.addAll(listFilesForFolder(fileEntry));
+			}
+			files.add(fileEntry);
+		}
+		return files;
+	}
+
+	public static File[] list(File dir)
+	{
+		File[] files = dir(dir).listFiles();
+
+		return files == null ? new File[0] : files;
+	}
+
+	public static File dir(File d)
+	{
+		if (!d.isDirectory())
+			throw new ErrorException("Given directory is not one !");
+
+		return d;
 	}
 }

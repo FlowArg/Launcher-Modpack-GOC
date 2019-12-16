@@ -1,7 +1,7 @@
 package fr.flowarg.launcher.gui;
 
 import fr.flowarg.launcher.Main;
-import fr.flowarg.launcher.gui.console.ConsoleFrame.Console;
+import fr.flowarg.launcher.gui.console.Console;
 import fr.litarvan.openauth.AuthenticationException;
 import fr.theshark34.openlauncherlib.LaunchException;
 import fr.theshark34.openlauncherlib.util.Saver;
@@ -19,7 +19,7 @@ import java.awt.*;
 import java.io.File;
 
 @SuppressWarnings("serial")
-public class Panel extends JPanel implements SwingerEventListener
+public class GPanel extends JPanel implements SwingerEventListener
 {
 	private static STexturedButton playButton = new STexturedButton(Swinger.getResource("play.png"));
 	private STexturedButton consoleButton = new STexturedButton(Swinger.getResource("console.png"));
@@ -41,11 +41,8 @@ public class Panel extends JPanel implements SwingerEventListener
 	
 	private Image background = Swinger.getResource("background.png");
 	
-	public Panel()
+	public GPanel()
 	{
-		int confirm = JOptionPane.showConfirmDialog(this, "Attention, vous devrez lancer auparavant le launcher officiel de Minecraft et une version en 1.12.2 avant de lancer celui-ci, sinon vous n'allez pas pouvoir lancer le jeu. Merci de votre compréhension.", "Attention !!!", JOptionPane.OK_CANCEL_OPTION);
-		if(confirm != JOptionPane.OK_OPTION) Main.exit(0);
-		
 		this.setLayout(null);
 		
 		this.quitButton.setBounds((int)(4475 / 2.4), 5);
@@ -58,19 +55,19 @@ public class Panel extends JPanel implements SwingerEventListener
 		this.ramButton.setBounds(0, 60);
 		this.ramButton.setVisible(true);
 		
-		Panel.usernameField.setBounds((int)(3113 / 2.4), (int)(1466 / 3.2), (int)(1140 / 2.4), (int)(275 / 3.2));
+		GPanel.usernameField.setBounds((int)(3113 / 2.4), (int)(1466 / 3.2), (int)(1140 / 2.4), (int)(275 / 3.2));
 		this.setGood(usernameField);
-		Panel.usernameField.setVisible(true);
+		GPanel.usernameField.setVisible(true);
 		
-		Panel.passwordField.setBounds((int)(3113 / 2.4), (int)(1978 / 3.2), (int)(1140 / 2.4), (int)(275 / 3.2));
+		GPanel.passwordField.setBounds((int)(3113 / 2.4), (int)(1978 / 3.2), (int)(1140 / 2.4), (int)(275 / 3.2));
 		this.setGood(passwordField);
-		Panel.passwordField.setVisible(true);
+		GPanel.passwordField.setVisible(true);
 
 		this.viewPassword.setBounds((int)(2983 / 2.4), (int)(2028 / 3.2));
 		this.viewPassword.setVisible(true);
 		
-		Panel.playButton.setBounds((int)(3203 / 2.4), (int)(2417 / 3.2));
-		Panel.playButton.setVisible(true);
+		GPanel.playButton.setBounds((int)(3203 / 2.4), (int)(2417 / 3.2));
+		GPanel.playButton.setVisible(true);
 		
 		this.consoleButton.setBounds(0, 0);
 		this.consoleButton.setVisible(true);
@@ -79,27 +76,27 @@ public class Panel extends JPanel implements SwingerEventListener
 		bar.setBounds(0, (int)(3446 / 3.2), (int)(4608 / 2.4), 11);
 		bar.setVisible(true);
 		
-		Panel.labelForBar.setBounds(0, (int)(3300 / 3.2), (int)(4598 / 2.4), 48);
-		Panel.labelForBar.setFont(textFontBasic);
-		Panel.labelForBar.setForeground(Color.YELLOW);
-		Panel.labelForBar.setVisible(true);
+		GPanel.labelForBar.setBounds(0, (int)(3300 / 3.2), (int)(4598 / 2.4), 48);
+		GPanel.labelForBar.setFont(textFontBasic);
+		GPanel.labelForBar.setForeground(Color.YELLOW);
+		GPanel.labelForBar.setVisible(true);
 		
-		this.add(Panel.playButton);
+		this.add(GPanel.playButton);
 		this.add(this.hideButton);
 		this.add(this.quitButton);
 		this.add(this.consoleButton);
-		this.add(Panel.usernameField);
-		this.add(Panel.passwordField);
+		this.add(GPanel.usernameField);
+		this.add(GPanel.passwordField);
 		this.add(bar);
 		this.add(this.ramButton);
-		this.add(Panel.labelForBar);
+		this.add(GPanel.labelForBar);
 		this.add(this.viewPassword);
 		
 		this.consoleButton.addEventListener(this);
 		this.quitButton.addEventListener(this);
 		this.hideButton.addEventListener(this);
 		this.ramButton.addEventListener(this);
-		Panel.playButton.addEventListener(this);
+		GPanel.playButton.addEventListener(this);
 		this.viewPassword.addEventListener(this);
 		
 		this.setVisible(true);
@@ -128,15 +125,15 @@ public class Panel extends JPanel implements SwingerEventListener
 	@Override
 	public void onEvent(@NotNull SwingerEvent e)
 	{
-		if(e.getSource() == Panel.playButton)
+		if(e.getSource() == GPanel.playButton)
 		{
-			Panel.setFieldsEnabled(false);
+			GPanel.setFieldsEnabled(false);
 			
 			if(usernameField.getText().replaceAll(" ", "").length() == 0 || passwordField.getText().length() == 0)
 			{
 				JOptionPane.showMessageDialog(this, "Veuillez entrer un mot de passe et un e-mail.", "Erreur", JOptionPane.ERROR_MESSAGE);
 				System.out.println("Erreur : Veuillez entrer un mot de passe et un e-mail.");
-				Panel.setFieldsEnabled(true);
+				GPanel.setFieldsEnabled(true);
 				return;
 			}
 			
@@ -145,16 +142,16 @@ public class Panel extends JPanel implements SwingerEventListener
 			
 			saver.set("username", usernameField.getText());
 			
-			Panel.playButton.setVisible(false);
+			GPanel.playButton.setVisible(false);
 		}
 		else if(e.getSource() == this.quitButton)
 		{
-			Animator.fadeOutFrame(Frame.getInstance(), 5, () -> Main.exit(0));
+			Animator.fadeOutFrame(GFrame.getInstance(), 5, () -> Main.exit(0));
 		}
 		
 		else if(e.getSource() == this.hideButton)
 		{
-			Frame.getInstance().setState(JFrame.ICONIFIED);
+			GFrame.getInstance().setState(JFrame.ICONIFIED);
 		}
 		
 		else if(e.getSource() == this.consoleButton)
@@ -199,21 +196,20 @@ public class Panel extends JPanel implements SwingerEventListener
 	@SuppressWarnings("deprecation")
 	private void start()
 	{
-		int confirm = JOptionPane.showConfirmDialog(Panel.this, "Le launcher va telecharger des fichiers, nous vous conseillons d'être connecté à internet par wifi / cable et d'éviter les réseaux satellites pour éviter de payer tous frais de forfaits suplémentaires. Cliquez sur ok pour continuer !", "Warning : Telechargement", JOptionPane.OK_CANCEL_OPTION);
+		int confirm = JOptionPane.showConfirmDialog(GPanel.this, "Le launcher va telecharger des fichiers, nous vous conseillons d'être connecté à internet par wifi / cable et d'éviter les réseaux satellites pour éviter de payer tous frais de forfaits suplémentaires. Cliquez sur ok pour continuer !", "Warning : Telechargement", JOptionPane.OK_CANCEL_OPTION);
 
 		if (confirm == JOptionPane.OK_OPTION) {
 			try {
 				Main.auth(usernameField.getText(), passwordField.getText());
 			} catch (AuthenticationException e) {
-				JOptionPane.showMessageDialog(Panel.this, "Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(GPanel.this, "Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
 				System.out.println("Erreur de connexion : Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.");
-				Panel.setFieldsEnabled(true);
+				GPanel.setFieldsEnabled(true);
 				return;
 			}
-			System.out.println("Starting " + Main.DOWNLOADER.getName() + " Downloader, wait please...");
 			Main.DOWNLOADER.start();
 			System.out.println("Launching game...");
-			Panel.setText("Launching game...");
+			GPanel.setText("Launching game...");
 			try {
 				Main.launch();
 			} catch (LaunchException | InterruptedException e) {

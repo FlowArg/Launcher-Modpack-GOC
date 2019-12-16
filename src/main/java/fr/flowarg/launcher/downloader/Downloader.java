@@ -1,20 +1,22 @@
 package fr.flowarg.launcher.downloader;
 
+import fr.arinonia.launcherlib.updater.utils.JsonManager;
+import fr.arinonia.launcherlib.updater.versions.AssetIndex;
+import fr.arinonia.launcherlib.updater.versions.AssetIndexInfo;
 import fr.flowarg.launcher.Main;
-import fr.flowarg.launcher.gui.Panel;
-import fr.flowarg.launcher.interfaces.IDownloader;
+import fr.flowarg.launcher.gui.GPanel;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class Downloader implements IDownloader
+public class Downloader
 {
 	public static List<String> LINK_OF_FILES = new ArrayList<>();
 	public static List<String> FILE_NAME = new ArrayList<>();
@@ -78,20 +80,20 @@ public class Downloader implements IDownloader
 
 		if(System.getProperty("os.name").toLowerCase().contains("win"))
 		{
-			ll(Links.TEST_NATIVE_1_WIN);
-			ll(Links.TEST_NATIVE_2_WIN);
-			ll(Links.TEST_NATIVE_3_WIN);
+			ll(Links.NATIVE_1_WIN);
+			ll(Links.NATIVE_2_WIN);
+			ll(Links.NATIVE_3_WIN);
 		}
 		else if(System.getProperty("os.name").toLowerCase().contains("mac"))
 		{
-			ll(Links.TEST_NATIVE_1_OSX);
-			ll(Links.TEST_NATIVE_2_OSX);
+			ll(Links.NATIVE_1_OSX);
+			ll(Links.NATIVE_2_OSX);
 		}
 		else
 		{
-			ll(Links.TEST_NATIVE_1_LINUX);
-			ll(Links.TEST_NATIVE_2_LINUX);
-			ll(Links.TEST_NATIVE_3_LINUX);
+			ll(Links.NATIVE_1_LINUX);
+			ll(Links.NATIVE_2_LINUX);
+			ll(Links.NATIVE_3_LINUX);
 		}
 
 		ll(Links.MOD_JEI);
@@ -169,20 +171,20 @@ public class Downloader implements IDownloader
 		System.out.println("Initializing Natives list...");
 		if(System.getProperty("os.name").toLowerCase().contains("win"))
 		{
-			fl(Names.TEST_NATIVE_1_WIN);
-			fl(Names.TEST_NATIVE_2_WIN);
-			fl(Names.TEST_NATIVE_3_WIN);
+			fl(Names.NATIVE_1_WIN);
+			fl(Names.NATIVE_2_WIN);
+			fl(Names.NATIVE_3_WIN);
 		}
 		else if(System.getProperty("os.name").toLowerCase().contains("mac"))
 		{
-			fl(Names.TEST_NATIVE_1_OSX);
-			fl(Names.TEST_NATIVE_2_OSX);
+			fl(Names.NATIVE_1_OSX);
+			fl(Names.NATIVE_2_OSX);
 		}
 		else
 		{
-			fl(Names.TEST_NATIVE_1_LINUX);
-			fl(Names.TEST_NATIVE_2_LINUX);
-			fl(Names.TEST_NATIVE_3_LINUX);
+			fl(Names.NATIVE_1_LINUX);
+			fl(Names.NATIVE_2_LINUX);
+			fl(Names.NATIVE_3_LINUX);
 		}
 
 		System.out.println("Initializing Mods list...");
@@ -215,11 +217,10 @@ public class Downloader implements IDownloader
 		++NUMBER_OF_FILES;
 	}
 
-	@Override
 	public void start()
 	{
 		System.out.println("Downloading files...");
-		Panel.setText("Downloading files...");
+		GPanel.setText("Downloading files...");
 		
 		for (int i = 0; i < NUMBER_OF_FILES; i++)
 		{
@@ -230,15 +231,20 @@ public class Downloader implements IDownloader
 				File folder = file.getParentFile();
 				folder.mkdirs();
 
-				if(!verifyFiles(file, fileToDownload))
+				if(verifyFiles(file, fileToDownload))
 				{
-					download(i);
+					System.out.println("\n" + "Downloading file : " + LINK_OF_FILES.get(i) + "...");
+					GPanel.setText("Downloading file : " + LINK_OF_FILES.get(i) + "...");
+					URL website = new URL(LINK_OF_FILES.get(i));
+					FileUtils.copyURLToFile(website, new File(FILE_NAME.get(i)));
+					System.out.println("File : " + LINK_OF_FILES.get(i) + " has been downloaded at : " + FILE_NAME.get(i) + ".");
+					GPanel.setText("File : " + LINK_OF_FILES.get(i) + " has been downloaded at : " + FILE_NAME.get(i) + ".");
 				}
 			}
 			catch (IOException e)
 			{
 				Main.crashReporter.catchError(e, "Le launcher n'a pas pu telecharge les fichiers requis pour le lancement, veuillez verifier votre connexion internet et votre pare-feu, si l'erreur persiste, contactez moi sur Discord.");
-				Panel.setFieldsEnabled(true);
+				GPanel.setFieldsEnabled(true);
 			}
 		}
 
@@ -246,64 +252,32 @@ public class Downloader implements IDownloader
 		FILE_NAME.clear();
 		
 		System.out.println("All files are correctly downloaded.");
-		Panel.setText("All files are correctly downloaded.");
-		
-		try
-		{
-			Panel.setText("Verifying objects...");
-			System.out.println("Verifying objects...");
+		GPanel.setText("All files are correctly downloaded.");
 
-			File objectsS = new File(Names.DIR + ".minecraft/assets/objects");
-			File objectsT = new File(Main.GAME_DIR + "/common/assets/objects");
-			
-			File skinsS = new File(Names.DIR + ".minecraft/assets/skins");
-			File skinsT = new File(Main.GAME_DIR + "/common/assets/skins");
-
-			if(!objectsT.exists())
-			{
-				Panel.setText("Copying objects...");
-				System.out.println("Copying objects...");
-				FileUtils.copyDirectory(objectsS, objectsT);
-			}
-			
-			Panel.setText("Verifying skins...");
-			System.out.println("Verifying skins...");
-			if(!skinsT.exists())
-			{
-				if(skinsS.exists())
-				{
-					Panel.setText("Copying skins...");
-					System.out.println("Copying skins...");
-					FileUtils.copyDirectory(skinsS, skinsT);
-				}
-			}
-		}
-		catch (IOException e)
-		{
-			Main.crashReporter.catchError(e, "Erreur dans la copie des fichiers, veuillez verifier l'existance des dossiers dans votre .minecraft : assets/objects, assets/skins (optional) et assurez vous d'avoir lancer au moins une fois, une version 1.12.2 du jeu.");
-			Panel.setFieldsEnabled(true);
-		}
+		GPanel.setText("Verifying objects...");
+		System.out.println("Verifying objects...");
+		this.downloadResources();
 
 		try
 		{
 			System.out.println("Extracting natives...");
-			Panel.setText("Extracting natives...");
+			GPanel.setText("Extracting natives...");
 			if(System.getProperty("os.name").toLowerCase().contains("win"))
 			{
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_1_WIN);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_2_WIN);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_3_WIN);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_1_WIN);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_2_WIN);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_3_WIN);
 			}
 			else if(System.getProperty("os.name").toLowerCase().contains("mac"))
 			{
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_1_OSX);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_2_OSX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_1_OSX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_2_OSX);
 			}
 			else
 			{
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_1_LINUX);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_2_LINUX);
-				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.TEST_NATIVE_3_LINUX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_1_LINUX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_2_LINUX);
+				fr.flowarg.launcher.FileUtils.unzipJar(Names.NATIVES, Names.NATIVE_3_LINUX);
 			}
 			FileUtils.deleteDirectory(new File(Names.NATIVES + "META-INF\\"));
 		} catch (IOException e)
@@ -312,47 +286,72 @@ public class Downloader implements IDownloader
 		}
 
 		System.out.println("All files are completely verified and downloaded !");
-		Panel.setText("All files are completely verified and downloaded !");
+		GPanel.setText("All files are completely verified and downloaded !");
 	}
 
-	@Override
-	@SuppressWarnings("resource")
-	public void download(int iterator) throws IOException
+	@SuppressWarnings({ "deprecation", "static-acces"})
+	private void downloadResources()
 	{
-		System.out.println("\n" + "Downloading file : " + LINK_OF_FILES.get(iterator) + "...");
-		Panel.setText("Downloading file : " + LINK_OF_FILES.get(iterator) + "...");
-		URL website = new URL(LINK_OF_FILES.get(iterator));
-		ReadableByteChannel rbc = Channels.newChannel(website.openStream());		
-		FileOutputStream fos = new FileOutputStream(FILE_NAME.get(iterator));
-		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-		System.out.println("File : " + LINK_OF_FILES.get(iterator) + " has been downloaded at : " + FILE_NAME.get(iterator) + ".");
-		Panel.setText("File : " + LINK_OF_FILES.get(iterator) + " has been downloaded at : " + FILE_NAME.get(iterator) + ".");
+		InputStream stream = null;
+
+		final File objectsFolder = new File(Names.COMMON + "assets\\objects\\");
+		final File indexesFolder = new File(Names.COMMON, "assets\\indexes\\");
+
+		if (!objectsFolder.exists())
+		{
+			objectsFolder.mkdirs();
+		}
+
+		final AssetIndexInfo indexInfo = new AssetIndexInfo("1.12");
+		final File indexFile = new File(indexesFolder, "1.12" + ".json");
+
+		try
+		{
+			final URL indexUrl = indexInfo.getURL();
+			stream = indexUrl.openStream();
+			final String json = IOUtils.toString(stream);
+			FileUtils.writeStringToFile(indexFile, json);
+
+			JsonManager manager = new JsonManager();
+			final AssetIndex index = manager.getGson().fromJson(json, AssetIndex.class);
+
+			for (final Map.Entry<AssetIndex.AssetObject, String> entry : index.getUniqueObjects().entrySet())
+			{
+				final AssetIndex.AssetObject object = entry.getKey();
+				final String filename = object.getHash().substring(0, 2) + "/" + object.getHash();
+				String url = "http://resources.download.minecraft.net/" + filename;
+				final File file = new File(objectsFolder, filename);
+				if(verifyFiles(file, new File(url)))
+				{
+					System.out.println("Downloading : " + url + " .");
+					GPanel.setText("Downloading : " + url + " .");
+					FileUtils.copyURLToFile(new URL(url), file);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			IOUtils.closeQuietly(stream);
+		}
+		IOUtils.closeQuietly(stream);
 	}
 	
 	public static boolean verifyFiles(File file, File fileToDownload)
     {
 		if(!file.exists())
 		{
-			return false;
+			return true;
 		}
 		else if(file.exists() && fr.flowarg.launcher.FileUtils.getFileSizeBytes(file).equals(fr.flowarg.launcher.FileUtils.getFileSizeBytes(fileToDownload)))
 		{
 			System.err.println("File : " + file + " exist but it's invalid ! Deleting it ! (Invalid size).");
 			file.delete();
-			return false;
+			return true;
 		}
-		else return true;
-	}
-
-	@Override
-	public int getId()
-	{
-		return 0;
-	}
-
-	@Override
-	public String getName()
-	{
-		return "Downloader of GameFiles";
+		else return false;
 	}
 }

@@ -78,12 +78,12 @@ public class Names
 	public static final String TEXTTOSPEECH = LIBS + "text2speech-1.10.3.jar";
 	public static final String LWJGL = LIBS + "lwjgl-2.9.4-nightly-20150209.jar";
 	public static final String LWJGL_UTIL = LIBS + "lwjgl_util-2.9.4-nightly-20150209.jar";
-	public static final String TEST_NATIVE_1_WIN = NATIVES + "lwjgl-platform-2.9.4-nightly-20150209-natives-windows.jar";
-	public static final String TEST_NATIVE_1_LINUX = NATIVES + "lwjgl-platform-2.9.4-nightly-20150209-natives-linux.jar";
-	public static final String TEST_NATIVE_1_OSX = NATIVES + "lwjgl-platform-2.9.4-nightly-20150209-natives-osx.jar";
-	public static final String TEST_NATIVE_2_WIN = NATIVES + "jinput-platform-2.0.5-natives-windows.jar";
-	public static final String TEST_NATIVE_2_LINUX = NATIVES + "jinput-platform-2.0.5-natives-linux.jar";
-	public static final String TEST_NATIVE_2_OSX = NATIVES + "jinput-platform-2.0.5-natives-osx.jar";
-	public static final String TEST_NATIVE_3_WIN = NATIVES + "text2speech-1.10.3-natives-windows.jar";
-	public static final String TEST_NATIVE_3_LINUX = NATIVES + "text2speech-1.10.3-natives-linux.jar";
+	public static final String NATIVE_1_WIN = NATIVES + "lwjgl-platform-2.9.4-nightly-20150209-natives-windows.jar";
+	public static final String NATIVE_1_LINUX = NATIVES + "lwjgl-platform-2.9.4-nightly-20150209-natives-linux.jar";
+	public static final String NATIVE_1_OSX = NATIVES + "lwjgl-platform-2.9.4-nightly-20150209-natives-osx.jar";
+	public static final String NATIVE_2_WIN = NATIVES + "jinput-platform-2.0.5-natives-windows.jar";
+	public static final String NATIVE_2_LINUX = NATIVES + "jinput-platform-2.0.5-natives-linux.jar";
+	public static final String NATIVE_2_OSX = NATIVES + "jinput-platform-2.0.5-natives-osx.jar";
+	public static final String NATIVE_3_WIN = NATIVES + "text2speech-1.10.3-natives-windows.jar";
+	public static final String NATIVE_3_LINUX = NATIVES + "text2speech-1.10.3-natives-linux.jar";
 }

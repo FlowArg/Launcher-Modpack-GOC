@@ -17,8 +17,8 @@
 package fr.flowarg.launcher;
 
 import fr.flowarg.launcher.downloader.Downloader;
-import fr.flowarg.launcher.gui.Frame;
-import fr.flowarg.launcher.gui.Panel;
+import fr.flowarg.launcher.gui.GFrame;
+import fr.flowarg.launcher.gui.GPanel;
 import fr.flowarg.launcher.updater.Updater;
 import fr.litarvan.openauth.AuthPoints;
 import fr.litarvan.openauth.AuthenticationException;
@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 /**
  * @author FlowArg
- * @version 1.2.3
+ * @version 1.2.4
  * @since 0.0.1
  *
  * Main class of the launcher.
@@ -58,16 +58,14 @@ public class Main
 	public static void main(String[] args)
 	{
 		System.out.println("Launching launcher...");
-		System.out.println("Found 2 valid Downloader : " + DOWNLOADER.getName() + ", " + UPDATER.getName() + ". Their ids are : " + DOWNLOADER.getId() + ", " + UPDATER.getId() + ".");
 		Swinger.setResourcePath("/assets/");
 		Swinger.setSystemLookNFeel();
 		System.out.println("Verifying available updates...");
-		System.out.println("Starting " + UPDATER.getName() + " Downloader, wait please...");
 		UPDATER.start();
 		System.out.println("Initializing launcher..");
 		DOWNLOADER.init();
 		System.out.println("Launching Window for " + System.getProperty("os.name") + " os.");
-		Frame frame = new Frame("Launcher By FlowArg");
+		GFrame frame = new GFrame("Launcher By FlowArg");
 		frame.setVisible(true);
 	}
 
@@ -84,11 +82,11 @@ public class Main
 		ExternalLaunchProfile profile = MinecraftLauncher.createExternalProfile(INFOS, LAUNCH_DIR, authInfos);
 		ExternalLauncher launcher = new ExternalLauncher(profile);
 		
-		profile.getVmArgs().addAll(Arrays.asList(Panel.getRamSelector().getRamArguments()));
+		profile.getVmArgs().addAll(Arrays.asList(GPanel.getRamSelector().getRamArguments()));
 
 		Process p = launcher.launch();
 		Thread.sleep(5000L);
-		Frame.getInstance().setVisible(false);
+		GFrame.getInstance().setVisible(false);
 		p.waitFor();
 		exit(0);
 	}
