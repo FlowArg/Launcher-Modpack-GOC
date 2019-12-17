@@ -2,6 +2,7 @@ package fr.flowarg.launcher.gui;
 
 import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.gui.console.Console;
+import fr.flowarg.launcher.utils.Logger;
 import fr.litarvan.openauth.AuthenticationException;
 import fr.theshark34.openlauncherlib.LaunchException;
 import fr.theshark34.openlauncherlib.util.Saver;
@@ -135,7 +136,7 @@ public class GPanel extends JPanel implements SwingerEventListener
 			if(usernameField.getText().replaceAll(" ", "").length() == 0 || passwordField.getText().length() == 0)
 			{
 				JOptionPane.showMessageDialog(this, "Veuillez entrer un mot de passe et un e-mail.", "Erreur", JOptionPane.ERROR_MESSAGE);
-				System.out.println("Erreur : Veuillez entrer un mot de passe et un e-mail.");
+				Logger.info("Erreur : Veuillez entrer un mot de passe et un e-mail.");
 				GPanel.setFieldsEnabled(true);
 				return;
 			}
@@ -206,17 +207,17 @@ public class GPanel extends JPanel implements SwingerEventListener
 				Main.auth(usernameField.getText(), passwordField.getText());
 			} catch (AuthenticationException e) {
 				JOptionPane.showMessageDialog(GPanel.this, "Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
-				System.out.println("Erreur de connexion : Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.");
+				Logger.info("Erreur de connexion : Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.");
 				GPanel.setFieldsEnabled(true);
 				return;
 			}
 			Main.DOWNLOADER.start();
-			System.out.println("Launching game...");
+			Logger.info("Launching game...");
 			GPanel.setText("Launching game...");
 			try {
 				Main.launch();
 			} catch (LaunchException | InterruptedException e) {
-				Main.crashReporter.catchError(e, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher");
+				Main.CRASH_REPORTER.catchError(e, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher");
 			}
 		}
 		else setFieldsEnabled(true);

@@ -1,6 +1,7 @@
-package fr.flowarg.launcher;
+package fr.flowarg.launcher.utils;
 
 import fr.arinonia.launcherlib.launchlib.exceptions.ErrorException;
+import org.jetbrains.annotations.Nullable;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.*;
@@ -15,8 +16,10 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static fr.flowarg.launcher.utils.Constants.TEMP_DIR;
+
 @SuppressWarnings("rawtypes")
-public class FileUtils
+public final class FileUtils
 {
 	public static String getFileExtension(final File file)
 	{
@@ -36,7 +39,7 @@ public class FileUtils
 		return fileName;
 	}
 
-    public static void createFile(File file) throws IOException
+    public static void createFile(final File file) throws IOException
     {
         if (!file.exists())
         {
@@ -55,7 +58,7 @@ public class FileUtils
         fw.close();
     }
 
-    public static String loadFile(File file) throws IOException
+    public static String loadFile(final File file) throws IOException
 	{
         if (file.exists())
         {
@@ -90,7 +93,7 @@ public class FileUtils
 		}
 	}
 
-	public static ArrayList<File> listRecursive(File directory)
+	public static ArrayList<File> listRecursive(final File directory)
 	{
 		ArrayList<File> files = new ArrayList<File>();
 		File[] fs = directory.listFiles();
@@ -202,7 +205,7 @@ public class FileUtils
 		return sb.toString();
 	}
 
-	public static String getMD5ofFile(File file) throws NoSuchAlgorithmException, IOException
+	public static String getMD5ofFile(final File file) throws NoSuchAlgorithmException, IOException
 	{
 		MessageDigest md5Digest = MessageDigest.getInstance("MD5");
 		return getFileChecksum(md5Digest, file);
@@ -246,6 +249,37 @@ public class FileUtils
 		}
 	}
 
+	public static void unzipJars(JarPath... jars) throws IOException
+	{
+		for (JarPath jar : jars)
+		{
+			unzipJar(jar.getDestination(), jar.getJarPath());
+		}
+	}
+
+	public static class JarPath
+	{
+		private String destination;
+		private String jarPath;
+
+		public JarPath(String destination, String jarPath)
+		{
+			this.destination = destination;
+			this.jarPath = jarPath;
+		}
+
+		public String getDestination()
+		{
+			return destination;
+		}
+
+		public String getJarPath()
+		{
+			return jarPath;
+		}
+	}
+
+	@Nullable
 	public static String getSHA1(final File file) {
 		try {
 			final InputStream input = new FileInputStream(file);
@@ -272,7 +306,7 @@ public class FileUtils
 
 	public static String getSHA1(final URL url) throws IOException
 	{
-		String tempDir = System.getProperty("user.home") + "\\AppData\\Local\\Temp\\";
+		String tempDir = TEMP_DIR;
 		File tempFile = new File(tempDir + url.getFile());
 		org.apache.commons.io.FileUtils.copyURLToFile(url, tempFile);
 		String sha1 = FileUtils.getSHA1(tempFile);
@@ -295,14 +329,14 @@ public class FileUtils
 		return files;
 	}
 
-	public static File[] list(File dir)
+	public static File[] list(final File dir)
 	{
 		File[] files = dir(dir).listFiles();
 
 		return files == null ? new File[0] : files;
 	}
 
-	public static File dir(File d)
+	public static File dir(final File d)
 	{
 		if (!d.isDirectory())
 			throw new ErrorException("Given directory is not one !");

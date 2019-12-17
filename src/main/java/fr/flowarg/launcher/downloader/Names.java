@@ -1,15 +1,9 @@
 package fr.flowarg.launcher.downloader;
 
-import fr.flowarg.launcher.Main;
+import static fr.flowarg.launcher.utils.Constants.*;
 
-public class Names
+public final class Names
 {
-	public static final String COMMON = Main.GAME_DIR + "\\common\\";
-	public static final String LIBS = COMMON + "libraries\\";
-	public static final String MOD = Main.GAME_DIR + "\\mods\\";
-	public static final String NATIVES = COMMON + "natives\\";
-	public static final String DIR = System.getProperty("user.home") + "\\AppData\\Roaming\\";
-	
 	public static final String VERSIONS_INDEX = COMMON + "versions\\1.12.2\\1.12.2.json";
 	public static final String ASSETS_INDEX = COMMON + "assets\\indexes\\1.12.json";
 	public static final String MINECRAFT_CLIENT = COMMON + "versions\\1.12.2\\1.12.2.jar";

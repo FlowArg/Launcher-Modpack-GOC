@@ -1,6 +1,6 @@
 package fr.flowarg.launcher.downloader;
 
-public class Links
+public final class Links
 {
 	public static final String VERSIONS_INDEX = "https://launchermeta.mojang.com/v1/packages/6e69e85d0f85f4f4b9e12dd99d102092a6e15918/1.12.2.json";
 	public static final String ASSETS_INDEX = "https://launchermeta.mojang.com/v1/packages/1584b57c1a0b5e593fad1f5b8f78536ca640547b/1.12.json";

@@ -17,10 +17,10 @@
 package fr.flowarg.launcher;
 
 import fr.flowarg.launcher.downloader.Downloader;
-import fr.flowarg.launcher.downloader.Names;
 import fr.flowarg.launcher.gui.GFrame;
 import fr.flowarg.launcher.gui.GPanel;
 import fr.flowarg.launcher.updater.Updater;
+import fr.flowarg.launcher.utils.Logger;
 import fr.litarvan.openauth.AuthPoints;
 import fr.litarvan.openauth.AuthenticationException;
 import fr.litarvan.openauth.Authenticator;
@@ -39,16 +39,18 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 
+import static fr.flowarg.launcher.utils.Constants.*;
+
 /**
  * @author FlowArg
- * @version 1.2.4
+ * @version 1.2.6
  * @since 0.0.1
  *
  * Main class of the launcher.
  */
-public class Main
+public final class Main
 {
-	public static final String ACTUAL_VERSION = "1.2.5";
+	public static final String ACTUAL_VERSION = "1.2.6";
 	public static final GameVersion VERSION = new GameVersion("1.12.2", GameType.V1_8_HIGHER);
 	public static final GameInfos INFOS = new GameInfos("gunsofchickens-modpack", VERSION, new GameTweak[] {GameTweak.FORGE});
 	public static final File GAME_DIR = INFOS.getGameDir();
@@ -56,33 +58,35 @@ public class Main
 	public static final GameFolder LAUNCH_DIR = new GameFolder("common\\assets", "common\\libraries", "common\\natives", "common\\versions\\1.12.2\\1.12.2.jar");
 	public static final Downloader DOWNLOADER = new Downloader();
 	public static final Updater UPDATER = new Updater();
-	public static final CrashReporter crashReporter = new CrashReporter("Launcher - Modpack Guns of Chickens", Main.LAUNCHER_CRASHS);
+	public static final CrashReporter CRASH_REPORTER = new CrashReporter("Launcher - Modpack Guns of Chickens", Main.LAUNCHER_CRASHS);
 	private static AuthInfos authInfos;
 
 	public static void main(String[] args)
 	{
-		System.out.println("Launching launcher...");
+		Logger.info("Launching launcher...");
 		Swinger.setResourcePath("/assets/");
 		Swinger.setSystemLookNFeel();
-		System.out.println("Verifying available updates...");
-		UPDATER.start();
-		System.out.println("Initializing launcher..");
+		Logger.info("Verifying available updates...");
 		try
 		{
-			FileUtils.copyURLToFile(new URL("https://flowarg.github.io/minecraft/launcher/sha1s.json"), new File(Names.COMMON + "sha1s.json"));
+			FileUtils.copyURLToFile(new URL("https://flowarg.github.io/minecraft/launcher/sha1s.json"), new File(COMMON + "sha1s.json"));
+			FileUtils.copyURLToFile(new URL("https://flowarg.github.io/minecraft/launcher/objects-sha1s.json"), new File(COMMON + "objects-sha1s.json"));
+			FileUtils.copyURLToFile(new URL("https://flowarg.github.io/minecraft/launcher/launcher.update.json"), new File(COMMON + "launcher.update.json"));
 		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
+		UPDATER.start();
+		Logger.info("Initializing launcher...");
 		DOWNLOADER.init();
-		System.out.println("Launching Window for " + System.getProperty("os.name") + " os.");
+		Logger.info("Launching Window for " + OS + " os.");
 		GFrame frame = new GFrame("Launcher By FlowArg");
 		frame.setVisible(true);
 	}
 
 	public static void auth(String username, String password) throws AuthenticationException
 	{
-		System.out.println("Authentication...");
+		Logger.info("Authentication...");
 		Authenticator authenticator = new Authenticator(Authenticator.MOJANG_AUTH_URL, AuthPoints.NORMAL_AUTH_POINTS);
 		AuthResponse response = authenticator.authenticate(AuthAgent.MINECRAFT, username, password, "");
 		authInfos = new AuthInfos(response.getSelectedProfile().getName(), response.getAccessToken(), response.getSelectedProfile().getId());
@@ -104,14 +108,16 @@ public class Main
 	
 	public static void exit(int status)
 	{
-		System.out.println("Exit with exit code " + status + ".");
-		File tempDir = new File(System.getProperty("user.home") + "\\AppData\\Local\\Temp\\");
+		Logger.info("Exit with exit code " + status + ".");
+		File tempDir = new File(TEMP_DIR);
 		try
 		{
 			FileUtils.cleanDirectory(tempDir);
 		} catch (IOException ignored) {}
 		if(!Downloader.FILE_NAME.isEmpty()) Downloader.FILE_NAME.clear();
 		if(!Downloader.LINK_OF_FILES.isEmpty()) Downloader.LINK_OF_FILES.clear();
+		if(!Downloader.OBJ_LINK_OF_FILES.isEmpty()) Downloader.OBJ_LINK_OF_FILES.clear();
+		if(!Downloader.OBJ_FILE_NAME.isEmpty()) Downloader.OBJ_FILE_NAME.clear();
 		System.exit(status);
 	}
 }
