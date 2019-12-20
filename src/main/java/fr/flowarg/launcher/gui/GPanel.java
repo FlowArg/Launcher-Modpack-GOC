@@ -23,7 +23,7 @@ import java.io.File;
 public class GPanel extends JPanel implements SwingerEventListener
 {
 	private static STexturedButton playButton = new STexturedButton(Swinger.getResource("play.png"));
-	private STexturedButton consoleButton = new STexturedButton(Swinger.getResource("console.png"));
+	private static STexturedButton consoleButton = new STexturedButton(Swinger.getResource("console.png"));
 	private STexturedButton quitButton = new STexturedButton(Swinger.getResource("quit.png"));
 	private STexturedButton hideButton = new STexturedButton(Swinger.getResource("hide.png"));
 	
@@ -32,10 +32,10 @@ public class GPanel extends JPanel implements SwingerEventListener
 	private static Saver saver = new Saver(new File(Main.GAME_DIR, "launcher.properties"));
 	private static JTextField usernameField = new JTextField(saver.get("username"));
 	private static JPasswordField passwordField = new JPasswordField(saver.get("password"));
-	private STexturedButton viewPassword = new STexturedButton(Swinger.getResource("viewPassword.png"));
+	private static STexturedButton viewPassword = new STexturedButton(Swinger.getResource("viewPassword.png"));
 	
 	private static RamSelector ramSelector = new RamSelector(new File(Main.GAME_DIR, "ram.txt"));
-	private STexturedButton ramButton = new STexturedButton(Swinger.getResource("ram.png"));
+	private static STexturedButton ramButton = new STexturedButton(Swinger.getResource("ram.png"));
 	
 	private Font textFontBasic = new Font("SansSerif", Font.BOLD, 30);
 	private Font passwordFontBasic = new Font("Calibri", Font.BOLD, 20);
@@ -52,9 +52,9 @@ public class GPanel extends JPanel implements SwingerEventListener
 		this.hideButton.setBounds((int)(4315 / 2.4), 5);
 		this.hideButton.setVisible(true);
 
-		this.ramButton.setText("Ram");
-		this.ramButton.setBounds(0, 60);
-		this.ramButton.setVisible(true);
+		ramButton.setText("Ram");
+		ramButton.setBounds(0, 60);
+		ramButton.setVisible(true);
 		
 		GPanel.usernameField.setBounds((int)(3113 / 2.4), (int)(1466 / 3.2), (int)(1140 / 2.4), (int)(275 / 3.2));
 		this.setGood(usernameField);
@@ -64,14 +64,14 @@ public class GPanel extends JPanel implements SwingerEventListener
 		this.setGood(passwordField);
 		GPanel.passwordField.setVisible(true);
 
-		this.viewPassword.setBounds((int)(2983 / 2.4), (int)(2028 / 3.2));
-		this.viewPassword.setVisible(true);
+		viewPassword.setBounds((int)(2983 / 2.4), (int)(2028 / 3.2));
+		viewPassword.setVisible(true);
 		
 		GPanel.playButton.setBounds((int)(3203 / 2.4), (int)(2417 / 3.2));
 		GPanel.playButton.setVisible(true);
 		
-		this.consoleButton.setBounds(0, 0);
-		this.consoleButton.setVisible(true);
+		consoleButton.setBounds(0, 0);
+		consoleButton.setVisible(true);
 
 		SColoredBar bar = new SColoredBar(Color.RED, Color.GREEN);
 		bar.setBounds(0, (int)(3446 / 3.2), (int)(4608 / 2.4), 11);
@@ -85,20 +85,20 @@ public class GPanel extends JPanel implements SwingerEventListener
 		this.add(GPanel.playButton);
 		this.add(this.hideButton);
 		this.add(this.quitButton);
-		this.add(this.consoleButton);
+		this.add(consoleButton);
 		this.add(GPanel.usernameField);
 		this.add(GPanel.passwordField);
 		this.add(bar);
-		this.add(this.ramButton);
+		this.add(ramButton);
 		this.add(GPanel.labelForBar);
-		this.add(this.viewPassword);
+		this.add(viewPassword);
 		
-		this.consoleButton.addEventListener(this);
+		consoleButton.addEventListener(this);
 		this.quitButton.addEventListener(this);
 		this.hideButton.addEventListener(this);
-		this.ramButton.addEventListener(this);
+		ramButton.addEventListener(this);
 		GPanel.playButton.addEventListener(this);
-		this.viewPassword.addEventListener(this);
+		viewPassword.addEventListener(this);
 		
 		this.setVisible(true);
 	}
@@ -129,9 +129,6 @@ public class GPanel extends JPanel implements SwingerEventListener
 		if(e.getSource() == GPanel.playButton)
 		{
 			GPanel.setFieldsEnabled(false);
-			this.viewPassword.setVisible(false);
-			this.ramButton.setVisible(false);
-			this.consoleButton.setVisible(false);
 			
 			if(usernameField.getText().replaceAll(" ", "").length() == 0 || passwordField.getText().length() == 0)
 			{
@@ -158,7 +155,7 @@ public class GPanel extends JPanel implements SwingerEventListener
 			GFrame.getInstance().setState(JFrame.ICONIFIED);
 		}
 		
-		else if(e.getSource() == this.consoleButton)
+		else if(e.getSource() == consoleButton)
 		{
 			Thread t = new Thread(() ->
 			{
@@ -167,13 +164,13 @@ public class GPanel extends JPanel implements SwingerEventListener
 			});
 			t.start();
 		}
-		else if(e.getSource() == this.ramButton)
+		else if(e.getSource() == ramButton)
 		{
 			ramSelector.display();
 			ramSelector.setFile(new File(Main.GAME_DIR, "ram.txt"));
 			ramSelector.save();
 		}
-		else if(e.getSource() == this.viewPassword)
+		else if(e.getSource() == viewPassword)
 		{
 			if(passwordField.getEchoChar() != (char)0) passwordField.setEchoChar((char)0);
 			else passwordField.setEchoChar('•');
@@ -186,6 +183,9 @@ public class GPanel extends JPanel implements SwingerEventListener
 		usernameField.setVisible(enabled);
 		passwordField.setVisible(enabled);
 		playButton.setVisible(enabled);
+		viewPassword.setVisible(enabled);
+		ramButton.setVisible(enabled);
+		consoleButton.setVisible(enabled);
 	}
 	
 	public static void setText(String text)

@@ -248,7 +248,7 @@ public final class Downloader
 		}
 		catch (Exception ex)
 		{
-			ex.printStackTrace();
+			Main.CRASH_REPORTER.catchError(ex, "Le launcher a rencontre une erreur lors de l'initialisation des fichiers. Veuillez relancer le launcher, si l'erreur persiste, contactez moi sur Discord.");
 		}
 		finally
 		{
@@ -368,6 +368,16 @@ public final class Downloader
 				if(!n3.delete()) n3.deleteOnExit();
 			}
 			FileUtils.deleteDirectory(new File(NATIVES + "META-INF\\"));
+			Main.addOnExitAction(new Thread(() ->
+			{
+				try
+				{
+					FileUtils.cleanDirectory(new File(NATIVES));
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}));
 		} catch (IOException e)
 		{
 			Main.CRASH_REPORTER.catchError(e, "Le launcher a rencontre une erreur lors de l'extraction des natives, relancez le launcher voir l'ordinateur complet. Si le soucis persistes, contactez moi sur Discord.");
@@ -420,7 +430,7 @@ public final class Downloader
 		}
 		catch (Exception ex)
 		{
-			ex.printStackTrace();
+			Main.CRASH_REPORTER.catchError(ex, "Le launcher à rencontré une erreur lors du telechargement des assets du jeu. Veuillez verifiez votre connexion internet, relancer le jeu voir me contactez sur discord si ca persiste.");
 		}
 		finally
 		{

@@ -43,14 +43,14 @@ import static fr.flowarg.launcher.utils.Constants.*;
 
 /**
  * @author FlowArg
- * @version 1.2.6
+ * @version 1.2.7
  * @since 0.0.1
  *
  * Main class of the launcher.
  */
 public final class Main
 {
-	public static final String ACTUAL_VERSION = "1.2.6";
+	public static final String ACTUAL_VERSION = "1.2.7";
 	public static final GameVersion VERSION = new GameVersion("1.12.2", GameType.V1_8_HIGHER);
 	public static final GameInfos INFOS = new GameInfos("gunsofchickens-modpack", VERSION, new GameTweak[] {GameTweak.FORGE});
 	public static final File GAME_DIR = INFOS.getGameDir();
@@ -119,5 +119,10 @@ public final class Main
 		if(!Downloader.OBJ_LINK_OF_FILES.isEmpty()) Downloader.OBJ_LINK_OF_FILES.clear();
 		if(!Downloader.OBJ_FILE_NAME.isEmpty()) Downloader.OBJ_FILE_NAME.clear();
 		System.exit(status);
+	}
+
+	public static void addOnExitAction(Thread thread)
+	{
+		Runtime.getRuntime().addShutdownHook(thread);
 	}
 }
