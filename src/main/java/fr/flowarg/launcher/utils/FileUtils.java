@@ -133,6 +133,19 @@ public final class FileUtils
 		return file.length() + " bytes";
 	}
 
+	public static long getFileSizeMegaBytesL(File file)
+	{
+		return file.length() / (1024 * 1024);
+	}
+	public static long getFileSizeKiloBytesL(File file)
+	{
+		return  file.length() / 1024;
+	}
+	public static long getFileSizeBytesL(File file)
+	{
+		return file.length();
+	}
+
 	public static String getStringPathOfClass(Class classToGetPath)
 	{
 		return classToGetPath.getProtectionDomain().getCodeSource().getLocation().getPath();

@@ -4,6 +4,11 @@ import static fr.flowarg.launcher.utils.Constants.*;
 
 public final class Names
 {
+	private Names()
+	{
+
+	}
+
 	public static final String VERSIONS_INDEX = COMMON + "versions\\1.12.2\\1.12.2.json";
 	public static final String ASSETS_INDEX = COMMON + "assets\\indexes\\1.12.json";
 	public static final String MINECRAFT_CLIENT = COMMON + "versions\\1.12.2\\1.12.2.jar";
@@ -35,21 +40,22 @@ public final class Names
 	public static final String FASTUTIL_7_1_0 = LIBS + "fastutil-7.1.0.jar";
 	public static final String LOG4J_API_2_8_1 = LIBS + "log4j-api-2.8.1.jar";
 	public static final String LOG4J_CORE_2_8_1 = LIBS + "log4j-core-2.8.1.jar";
-	public static final String MOD_JEI = MOD + "jei_1.12.2-4.15.0.291.jar";
-	public static final String MOD_LUNATRIUS_CORE = MOD + "LunatriusCore-1.12.2-1.2.0.42-universal.jar";
-	public static final String MOD_SCHEMATICA = MOD + "Schematica-1.12.2-1.8.0.169-universal.jar";
-	public static final String MOD_FLOW_UTILS = MOD + "Flow-Utils-1.12.2-0.1.3.jar";
-	public static final String MOD_GUNS_OF_CHICKENS = MOD + "Guns-of-Chickens-1.12.2-3.0.jar";
-	public static final String MOD_BACKPACKS = MOD + "IronBackpacks-1.12.2-3.0.8-12.jar";
-	public static final String MOD_CHISEL = MOD + "Chisel-MC1.12.2-1.0.1.44.jar";
-	public static final String MOD_BIBLIOCRAFT = MOD + "BiblioCraft[v2.4.5][MC1.12.2].jar";
-	public static final String MOD_CTM = MOD + "CTM-MC1.12.2-1.0.1.30.jar";
-	public static final String MOD_IRONCHEST = MOD + "ironchest-1.12.2-7.0.72.847.jar";
-	public static final String MOD_JOURNEY_MAP = MOD + "journeymap-1.12.2-5.5.5.jar";
-	public static final String MOD_ICE_AND_FIRE = MOD + "iceandfire-1.8.3.jar";
-	public static final String MOD_LLIBRARY = MOD + "llibrary-1.7.19-1.12.2.jar";
-	public static final String MOD_NETHEREX = MOD + "NetherEx-1.12.2-2.0.15.jar";
-	public static final String MOD_LIBRARYEX = MOD + "LibraryEx-1.12.2-1.0.12.jar";
+	public static final String MOD_JEI = MODS + "jei_1.12.2-4.15.0.291.jar";
+	public static final String MOD_LUNATRIUS_CORE = MODS + "LunatriusCore-1.12.2-1.2.0.42-universal.jar";
+	public static final String MOD_SCHEMATICA = MODS + "Schematica-1.12.2-1.8.0.169-universal.jar";
+	public static final String MOD_FLOW_UTILS = MODS + "Flow-Utils-1.12.2-0.1.3.jar";
+	public static final String MOD_GUNS_OF_CHICKENS = MODS + "Guns-of-Chickens-1.12.2-3.0.jar";
+	public static final String MOD_BACKPACKS = MODS + "IronBackpacks-1.12.2-3.0.8-12.jar";
+	public static final String MOD_CHISEL = MODS + "Chisel-MC1.12.2-1.0.1.44.jar";
+	public static final String MOD_BIBLIOCRAFT = MODS + "BiblioCraft[v2.4.5][MC1.12.2].jar";
+	public static final String MOD_CTM = MODS + "CTM-MC1.12.2-1.0.1.30.jar";
+	public static final String MOD_IRONCHEST = MODS + "ironchest-1.12.2-7.0.72.847.jar";
+	public static final String MOD_JOURNEY_MAP = MODS + "journeymap-1.12.2-5.5.5.jar";
+	public static final String MOD_ICE_AND_FIRE = MODS + "iceandfire-1.8.3.jar";
+	public static final String MOD_LLIBRARY = MODS + "llibrary-1.7.19-1.12.2.jar";
+	public static final String MOD_NETHEREX = MODS + "NetherEx-1.12.2-2.0.15.jar";
+	public static final String MOD_LIBRARYEX = MODS + "LibraryEx-1.12.2-1.0.12.jar";
+	public static final String MOD_TOROHEALTH = MODS + "torohealth-1.12.2-11.jar";
 	public static final String FORGE = LIBS + "forge-1.12.2-14.23.5.2847.jar";
 	public static final String LAUNCHWRAPPER = LIBS + "launchwrapper-1.12.jar";
 	public static final String ASM = LIBS + "asm-all-5.2.jar";

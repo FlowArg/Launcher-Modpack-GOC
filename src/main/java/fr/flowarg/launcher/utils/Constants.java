@@ -10,7 +10,7 @@ public interface Constants
     String ROAMING_DIR = APP_DATA + "Roaming\\";
     String COMMON = Main.GAME_DIR + "\\common\\";
     String LIBS = COMMON + "libraries\\";
-    String MOD = Main.GAME_DIR + "\\mods\\";
+    String MODS = Main.GAME_DIR + "\\mods\\";
     String NATIVES = COMMON + "natives\\";
     String ASSETS = COMMON + "assets\\";
     String OBJECTS = ASSETS + "objects\\";

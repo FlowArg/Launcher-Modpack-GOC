@@ -2,6 +2,10 @@ package fr.flowarg.launcher.downloader;
 
 public final class Links
 {
+	private Links()
+	{
+
+	}
 	public static final String VERSIONS_INDEX = "https://launchermeta.mojang.com/v1/packages/6e69e85d0f85f4f4b9e12dd99d102092a6e15918/1.12.2.json";
 	public static final String ASSETS_INDEX = "https://launchermeta.mojang.com/v1/packages/1584b57c1a0b5e593fad1f5b8f78536ca640547b/1.12.json";
 	
@@ -49,6 +53,7 @@ public final class Links
 	public static final String MOD_LLIBRARY = "https://media.forgecdn.net/files/2704/186/llibrary-1.7.19-1.12.2.jar";
 	public static final String MOD_NETHEREX = "https://media.forgecdn.net/files/2783/989/NetherEx-1.12.2-2.0.15.jar";
 	public static final String MOD_LIBRARYEX = "https://media.forgecdn.net/files/2803/288/LibraryEx-1.12.2-1.0.12.jar";
+	public static final String MOD_TOROHEALTH = "https://media.forgecdn.net/files/2483/817/torohealth-1.12.2-11.jar";
 	public static final String FORGE = "https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.5.2847/forge-1.12.2-14.23.5.2847-universal.jar";
 	public static final String LAUNCHWRAPPER = "https://libraries.minecraft.net/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar";
 	public static final String ASM = "https://files.minecraftforge.net/maven/org/ow2/asm/asm-all/5.2/asm-all-5.2.jar";

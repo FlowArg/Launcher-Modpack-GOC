@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,7 @@ public final class Downloader
 		ll(Links.MOD_LLIBRARY);
 		ll(Links.MOD_NETHEREX);
 		ll(Links.MOD_LIBRARYEX);
+        ll(Links.MOD_TOROHEALTH);
 		
 		NUMBER_OF_FILES = 0;
 		Logger.info("Initializing Libraries list...");
@@ -211,6 +213,7 @@ public final class Downloader
 		fl(Names.MOD_LLIBRARY);
 		fl(Names.MOD_NETHEREX);
 		fl(Names.MOD_LIBRARYEX);
+		fl(Names.MOD_TOROHEALTH);
 
 		Logger.info("Initializing objects...");
 		InputStream stream = null;
@@ -230,8 +233,8 @@ public final class Downloader
 		{
 			final URL indexUrl = indexInfo.getURL();
 			stream = indexUrl.openStream();
-			final String json = IOUtils.toString(stream);
-			FileUtils.writeStringToFile(indexFile, json);
+			final String json = IOUtils.toString(stream, StandardCharsets.UTF_8);
+			FileUtils.writeStringToFile(indexFile, json, StandardCharsets.UTF_8);
 
 			JsonManager.setGson(new GsonBuilder().serializeNulls().disableHtmlEscaping().setPrettyPrinting().create());
 			final AssetIndex index = JsonManager.getGson().fromJson(json, AssetIndex.class);
@@ -288,7 +291,7 @@ public final class Downloader
 
 				if(!isFileValid(file, fileToDownload, sha1))
 				{
-					Logger.info("\n" + "Downloading file : " + LINK_OF_FILES.get(i) + "...");
+					Logger.info("Downloading file : " + LINK_OF_FILES.get(i) + "...");
 					GPanel.setText("Downloading file : " + LINK_OF_FILES.get(i) + "...");
 					URL website = new URL(LINK_OF_FILES.get(i));
 					FileUtils.copyURLToFile(website, new File(FILE_NAME.get(i)));
@@ -373,10 +376,7 @@ public final class Downloader
 				try
 				{
 					FileUtils.cleanDirectory(new File(NATIVES));
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+				} catch (IOException ignored) {}
 			}));
 		} catch (IOException e)
 		{
@@ -387,7 +387,7 @@ public final class Downloader
 		GPanel.setText("All files are completely verified and downloaded !");
 	}
 
-	@SuppressWarnings({ "deprecation", "static-acces"})
+	@SuppressWarnings("deprecation")
 	private void downloadResources()
 	{
 		InputStream stream = null;
@@ -407,10 +407,9 @@ public final class Downloader
 		{
 			final URL indexUrl = indexInfo.getURL();
 			stream = indexUrl.openStream();
-			final String json = IOUtils.toString(stream);
-			FileUtils.writeStringToFile(indexFile, json);
+			final String json = IOUtils.toString(stream, StandardCharsets.UTF_8);
+			FileUtils.writeStringToFile(indexFile, json, StandardCharsets.UTF_8);
 
-			JsonManager.setGson(new GsonBuilder().serializeNulls().disableHtmlEscaping().setPrettyPrinting().create());
 			final AssetIndex index = JsonManager.getGson().fromJson(json, AssetIndex.class);
 
 			for (final Map.Entry<AssetIndex.AssetObject, String> entry : index.getUniqueObjects().entrySet())

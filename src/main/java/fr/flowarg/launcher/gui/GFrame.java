@@ -28,7 +28,7 @@ public class GFrame extends JFrame
 		this.addMouseMotionListener(mover);
 		this.setAlwaysOnTop(false);
 		AWTUtilities.setWindowOpacity(this, 0.0f);
-		
+
 		this.setContentPane(new GPanel());
 		Animator.fadeInFrame(this, 5);
 	}

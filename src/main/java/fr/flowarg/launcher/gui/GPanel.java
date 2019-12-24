@@ -2,6 +2,9 @@ package fr.flowarg.launcher.gui;
 
 import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.gui.console.Console;
+import fr.flowarg.launcher.utils.Constants;
+import fr.flowarg.launcher.utils.CorruptedFileException;
+import fr.flowarg.launcher.utils.FileUtils;
 import fr.flowarg.launcher.utils.Logger;
 import fr.litarvan.openauth.AuthenticationException;
 import fr.theshark34.openlauncherlib.LaunchException;
@@ -18,6 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 @SuppressWarnings("serial")
 public class GPanel extends JPanel implements SwingerEventListener
@@ -212,12 +218,31 @@ public class GPanel extends JPanel implements SwingerEventListener
 				return;
 			}
 			Main.DOWNLOADER.start();
+			try
+			{
+				int downloadOptifine = JOptionPane.showConfirmDialog(GPanel.this, "Souhaitez vous installer Optifine ? Si vous avez déjà Optifine, cliquez sur annuler.", "Installer Optifine", JOptionPane.OK_CANCEL_OPTION);
+				if(downloadOptifine == JOptionPane.OK_OPTION)
+				{
+					Desktop.getDesktop().browse(new URL("https://optifine.net/adloadx?f=OptiFine_1.12.2_HD_U_F5.jar").toURI());
+					Desktop.getDesktop().open(new File(Constants.MODS));
+					File f = new File(Constants.TEMP_DIR + "installer Optifine.txt");
+					FileUtils.createFile(f);
+					FileUtils.saveFile(f, "Telechargez le fichier puis deplacez le fichier dans le dossier qui vient de s'ouvrir.");
+					Desktop.getDesktop().open(f);
+					f.deleteOnExit();
+					JOptionPane.showConfirmDialog(GPanel.this, "Cliquez sur ok quand vous aurez termine la manipulation.", "Installer Optifine", JOptionPane.YES_NO_OPTION);
+				}
+			} catch (IOException | URISyntaxException e)
+			{
+				Main.CRASH_REPORTER.catchError(e, "Le launcher n'a pas pu ouvrir la page internet.");
+			}
 			Logger.info("Launching game...");
 			GPanel.setText("Launching game...");
 			try {
 				Main.launch();
-			} catch (LaunchException | InterruptedException e) {
-				Main.CRASH_REPORTER.catchError(e, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher");
+			} catch (LaunchException | InterruptedException | IOException | CorruptedFileException e)
+			{
+				Main.CRASH_REPORTER.catchError(e, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher et de consulter les logs du launcher.");
 			}
 		}
 		else setFieldsEnabled(true);
