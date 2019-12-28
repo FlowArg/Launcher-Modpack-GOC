@@ -13,12 +13,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import static fr.flowarg.launcher.utils.Constants.TEMP_DIR;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unused"})
 public final class FileUtils
 {
 	public static String getFileExtension(final File file)
@@ -305,7 +306,6 @@ public final class FileUtils
 				return new HexBinaryAdapter().marshal(sha1.digest()).toLowerCase();
 			} catch (Exception e) {
 				e.printStackTrace();
-
 			} finally {
 				if (input != null) {
 					input.close();
@@ -355,5 +355,21 @@ public final class FileUtils
 			throw new ErrorException("Given directory is not one !");
 
 		return d;
+	}
+
+	private static long size = 0;
+	public static long getBytesOfADirectory(File dir)
+	{
+		for (File file : Objects.requireNonNull(dir.listFiles()))
+		{
+			if (file.isDirectory())
+			{
+				size += getBytesOfADirectory(file);
+			}
+
+			size += file.length();
+		}
+
+		return size;
 	}
 }

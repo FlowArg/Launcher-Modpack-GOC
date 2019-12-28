@@ -46,17 +46,18 @@ import java.util.List;
 import java.util.Objects;
 
 import static fr.flowarg.launcher.utils.Constants.*;
+import static fr.flowarg.launcher.utils.FileUtils.*;
 
 /**
  * @author FlowArg
- * @version 1.3.1
+ * @version 1.3.2
  * @since 0.0.1
  *
  * Main class of the launcher.
  */
 public final class Main
 {
-	public static final String ACTUAL_VERSION = "1.3.1";
+	public static final String ACTUAL_VERSION = "1.3.2";
 	public static final GameVersion VERSION = new GameVersion("1.12.2", GameType.V1_8_HIGHER);
 	public static final GameInfos INFOS = new GameInfos("gunsofchickens-modpack", VERSION, new GameTweak[] {GameTweak.FORGE});
 	public static final File GAME_DIR = INFOS.getGameDir();
@@ -72,7 +73,7 @@ public final class Main
 	{
 		try
 		{
-			fr.flowarg.launcher.utils.FileUtils.createFile(LOG_FILE);
+			createFile(LOG_FILE);
 			Logger.info("Launching launcher (" + new Date().toString() + ")...");
 		} catch (IOException e)
 		{
@@ -99,7 +100,7 @@ public final class Main
 		{
 			e.printStackTrace();
 		}
-		// UPDATER.start();
+		UPDATER.start();
 		Logger.info("Initializing launcher...");
 		JsonManager.init();
 		DOWNLOADER.init();
@@ -132,17 +133,12 @@ public final class Main
 				hasOptiFine = true;
 				Logger.info("Detected OptifineTweaker.");
 			}
+			if(f.isDirectory() && f.getName().equalsIgnoreCase("memory_repo")) if(!f.delete()) f.deleteOnExit();
 		}
 
-		long a = 0;
 		if(hasOptiFine)
 		{
-			for (File file : Objects.requireNonNull(modsDir.listFiles()))
-			{
-				a += file.length();
-			}
-
-			if(Integer.parseInt(wi) != a)
+			if(Integer.parseInt(wi) != getBytesOfADirectory(modsDir))
 			{
 				FileUtils.cleanDirectory(new File(MODS));
 				System.out.println("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
@@ -152,12 +148,7 @@ public final class Main
 		}
 		else
 		{
-			for (File file : Objects.requireNonNull(modsDir.listFiles()))
-			{
-				a += file.length();
-			}
-
-			if(Integer.parseInt(wo) != a)
+			if(Integer.parseInt(wo) != getBytesOfADirectory(modsDir))
 			{
 				FileUtils.cleanDirectory(new File(MODS));
 				System.out.println("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
