@@ -1,13 +1,10 @@
 package fr.flowarg.launcher.downloader;
 
-import static fr.flowarg.launcher.utils.Constants.*;
+import fr.flowarg.launcher.utils.Constants;
 
-public final class Names
+public final class Names implements Constants
 {
-	private Names()
-	{
-
-	}
+	private Names() {}
 
 	public static final String VERSIONS_INDEX = COMMON + "versions\\1.12.2\\1.12.2.json";
 	public static final String ASSETS_INDEX = COMMON + "assets\\indexes\\1.12.json";
@@ -50,12 +47,13 @@ public final class Names
 	public static final String MOD_BIBLIOCRAFT = MODS + "BiblioCraft[v2.4.5][MC1.12.2].jar";
 	public static final String MOD_CTM = MODS + "CTM-MC1.12.2-1.0.1.30.jar";
 	public static final String MOD_IRONCHEST = MODS + "ironchest-1.12.2-7.0.72.847.jar";
-	public static final String MOD_JOURNEY_MAP = MODS + "journeymap-1.12.2-5.5.5.jar";
+	public static final String MOD_JOURNEY_MAP = MODS + "journeymap-1.12.2-5.5.6.jar";
 	public static final String MOD_ICE_AND_FIRE = MODS + "iceandfire-1.8.3.jar";
 	public static final String MOD_LLIBRARY = MODS + "llibrary-1.7.19-1.12.2.jar";
 	public static final String MOD_NETHEREX = MODS + "NetherEx-1.12.2-2.0.15.jar";
 	public static final String MOD_LIBRARYEX = MODS + "LibraryEx-1.12.2-1.0.12.jar";
 	public static final String MOD_TOROHEALTH = MODS + "torohealth-1.12.2-11.jar";
+	public static final String MOD_LAUNCHER_ADDON = MODS + "LauncherAddon-1.12.2-0.1.0-sources.jar";
 	public static final String FORGE = LIBS + "forge-1.12.2-14.23.5.2847.jar";
 	public static final String LAUNCHWRAPPER = LIBS + "launchwrapper-1.12.jar";
 	public static final String ASM = LIBS + "asm-all-5.2.jar";

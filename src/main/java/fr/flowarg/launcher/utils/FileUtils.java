@@ -1,6 +1,9 @@
 package fr.flowarg.launcher.utils;
 
 import fr.arinonia.launcherlib.launchlib.exceptions.ErrorException;
+import fr.flowarg.launcher.utils.exceptions.io.NotADirectoryException;
+import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
+import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
@@ -16,12 +19,18 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import static fr.flowarg.launcher.utils.Constants.TEMP_DIR;
+import java.util.zip.GZIPOutputStream;
 
 @SuppressWarnings({"rawtypes", "unused"})
-public final class FileUtils
+public final class FileUtils implements Constants
 {
+	private static long size = 0;
+
+	public static void reset()
+	{
+		size = 0;
+	}
+
 	public static String getFileExtension(final File file)
 	{
 		final String fileName = file.getName();
@@ -51,9 +60,8 @@ public final class FileUtils
 
     public static void saveFile(File file, String text) throws IOException
 	{
-        FileWriter fw;
         createFile(file);
-        fw = new FileWriter(file);
+		FileWriter fw = new FileWriter(file);
         fw.write(text);
         fw.flush();
         fw.close();
@@ -199,7 +207,7 @@ public final class FileUtils
 		FileInputStream fis = new FileInputStream(file);
 
 		byte[] byteArray = new byte[1024];
-		int bytesCount = 0;
+		int bytesCount;
 
 		while ((bytesCount = fis.read(byteArray)) != -1)
 		{
@@ -357,19 +365,67 @@ public final class FileUtils
 		return d;
 	}
 
-	private static long size = 0;
-	public static long getBytesOfADirectory(File dir)
+	public static long getBytesOfADirectory(File dir) throws NotADirectoryException
 	{
+		if(!dir.isDirectory()) throw new NotADirectoryException("Given directory is not one.");
+
 		for (File file : Objects.requireNonNull(dir.listFiles()))
 		{
+			long subDir = 0;
 			if (file.isDirectory())
 			{
-				size += getBytesOfADirectory(file);
+				subDir += getBytesOfASubDirectory(file);
 			}
 
 			size += file.length();
+			size += subDir;
 		}
-
 		return size;
+	}
+
+	public static long getBytesOfASubDirectory(final File subDir) throws NotADirectoryException
+	{
+		if(!subDir.isDirectory()) throw new NotADirectoryException("Given directory is not one.");
+
+		long size = 0;
+		for (File file : Objects.requireNonNull(subDir.listFiles()))
+		{
+			size += file.length();
+		}
+		return size;
+	}
+
+	public static void decompressTarArchive(final File tarGzFile, final File destinationDir)
+	{
+		final TarGZipUnArchiver unArchiver = new TarGZipUnArchiver();
+		final ConsoleLoggerManager console = new ConsoleLoggerManager();
+		console.initialize();
+		unArchiver.enableLogging(console.getLoggerForComponent("[Launcher - Guns of Chickens]"));
+		unArchiver.setSourceFile(tarGzFile);
+		unArchiver.setDestDirectory(destinationDir);
+		destinationDir.mkdirs();
+		unArchiver.extract();
+	}
+
+	public static void gzipFile(String baseFile, String newFile) throws IOException
+	{
+		final byte[] buffer = new byte[1024];
+
+		if(baseFile != null && newFile != null)
+		{
+			final FileOutputStream fileOutputStream = new FileOutputStream(newFile);
+			final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
+			final FileInputStream fileInputStream = new FileInputStream(baseFile);
+			int bytesRead;
+
+			while ((bytesRead = fileInputStream.read(buffer)) > 0)
+			{
+				gzipOutputStream.write(buffer, 0, bytesRead);
+			}
+
+			fileInputStream.close();
+			gzipOutputStream.finish();
+			gzipOutputStream.close();
+		}
 	}
 }

@@ -2,15 +2,14 @@ package fr.flowarg.launcher.sha1;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.flowarg.launcher.utils.Constants;
 import fr.flowarg.launcher.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static fr.flowarg.launcher.utils.Constants.COMMON;
-
-public final class SHA1Manager
+public final class SHA1Manager implements Constants
 {
     private static Gson gson;
 

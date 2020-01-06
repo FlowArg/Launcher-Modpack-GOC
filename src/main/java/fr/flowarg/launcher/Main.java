@@ -21,8 +21,10 @@ import fr.flowarg.launcher.downloader.Downloader;
 import fr.flowarg.launcher.gui.GFrame;
 import fr.flowarg.launcher.gui.GPanel;
 import fr.flowarg.launcher.updater.Updater;
-import fr.flowarg.launcher.utils.CorruptedFileException;
+import fr.flowarg.launcher.utils.Constants;
 import fr.flowarg.launcher.utils.Logger;
+import fr.flowarg.launcher.utils.exceptions.io.CorruptedFileException;
+import fr.flowarg.launcher.utils.exceptions.io.NotADirectoryException;
 import fr.litarvan.openauth.AuthPoints;
 import fr.litarvan.openauth.AuthenticationException;
 import fr.litarvan.openauth.Authenticator;
@@ -45,19 +47,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static fr.flowarg.launcher.utils.Constants.*;
 import static fr.flowarg.launcher.utils.FileUtils.*;
 
 /**
  * @author FlowArg
- * @version 1.3.2
+ * @version 1.3.5
  * @since 0.0.1
  *
  * Main class of the launcher.
  */
-public final class Main
+public final class Main implements Constants
 {
-	public static final String ACTUAL_VERSION = "1.3.2";
+	public static final String ACTUAL_VERSION = "1.3.5";
 	public static final GameVersion VERSION = new GameVersion("1.12.2", GameType.V1_8_HIGHER);
 	public static final GameInfos INFOS = new GameInfos("gunsofchickens-modpack", VERSION, new GameTweak[] {GameTweak.FORGE});
 	public static final File GAME_DIR = INFOS.getGameDir();
@@ -66,19 +67,38 @@ public final class Main
 	public static final Downloader DOWNLOADER = new Downloader();
 	public static final Updater UPDATER = new Updater();
 	public static final CrashReporter CRASH_REPORTER = new CrashReporter("Launcher - Modpack Guns of Chickens", Main.LAUNCHER_CRASHS);
-	public static final File LOG_FILE = new File(Main.GAME_DIR + "\\launcher-log\\Launcher Log-" + new Date().toString().replace(':', '-').replace("CET ", "") + ".log");
+	public static final File LOG_FILE = new File(LAUNCHER_LOGS_DIR + "Launcher Log-" + new Date().toString().replace(':', '-').replace("CET ", "") + ".log");
 	private static AuthInfos authInfos;
+
+	static {
+		try
+		{
+			File dir = new File(LAUNCHER_LOGS_DIR);
+			if(dir.exists())
+			{
+				for (File file : dir.listFiles())
+				{
+					if(getFileExtension(file).contains("log"))
+					{
+						gzipFile(LAUNCHER_LOGS_DIR + file.getName(), removeExtension(LAUNCHER_LOGS_DIR + file.getName()) + ".log.gz");
+						if (!file.delete()) file.deleteOnExit();
+					}
+				}
+			}
+			LOG_FILE.getParentFile().mkdirs();
+			createFile(LOG_FILE);
+			File f = new File(Main.GAME_DIR + "\\ram.txt");
+			if (!f.exists()) createFile(f);
+			Thread.sleep(1000);
+			Logger.info("Launching launcher (" + new Date().toString() + ")...");
+		} catch (IOException | InterruptedException e)
+		{
+			Main.CRASH_REPORTER.catchError(e, "Impossible de compresser les logs, ou de créer le fichier ram.txt.");
+		}
+	}
 
 	public static void main(String[] args)
 	{
-		try
-		{
-			createFile(LOG_FILE);
-			Logger.info("Launching launcher (" + new Date().toString() + ")...");
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 		Swinger.setResourcePath("/assets/");
 		Swinger.setSystemLookNFeel();
 		Logger.info("Verifying available updates...");
@@ -102,6 +122,7 @@ public final class Main
 		}
 		UPDATER.start();
 		Logger.info("Initializing launcher...");
+		reset();
 		JsonManager.init();
 		DOWNLOADER.init();
 		Logger.info("Launching Window for " + OS + " os.");
@@ -117,8 +138,13 @@ public final class Main
 		authInfos = new AuthInfos(response.getSelectedProfile().getName(), response.getAccessToken(), response.getSelectedProfile().getId());
 	}
 
-	public static void launch() throws LaunchException, InterruptedException, IOException, CorruptedFileException
-	{
+	public static void launch() throws LaunchException, InterruptedException, IOException
+    {
+		ExternalLaunchProfile profile = MinecraftLauncher.createExternalProfile(INFOS, LAUNCH_DIR, authInfos);
+		ExternalLauncher launcher = new ExternalLauncher(profile);
+		
+		profile.getVmArgs().addAll(Arrays.asList(GPanel.getRamSelector().getRamArguments()));
+
 		final File modsDir = new File(MODS);
 		List<String> list = FileUtils.readLines(new File(COMMON + "size.txt"), StandardCharsets.UTF_8);
 		final String wi = list.get(0);
@@ -141,9 +167,9 @@ public final class Main
 			if(Integer.parseInt(wi) != getBytesOfADirectory(modsDir))
 			{
 				FileUtils.cleanDirectory(new File(MODS));
-				System.out.println("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
-				GPanel.setText("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
-				throw new CorruptedFileException("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
+				Logger.info("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher. NOTE : Cette erreur peut avoir lieu lors d'une mise à jour d'un ou plusieurs mods, pas d'affolement.");
+				GPanel.setText("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher. NOTE : Cette erreur peut avoir lieu lors d'une mise à jour d'un ou plusieurs mods, pas d'affolement.");
+				throw new CorruptedFileException("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher. NOTE : Cette erreur peut avoir lieu lors d'une mise à jour d'un ou plusieurs mods, pas d'affolement.");
 			}
 		}
 		else
@@ -151,16 +177,12 @@ public final class Main
 			if(Integer.parseInt(wo) != getBytesOfADirectory(modsDir))
 			{
 				FileUtils.cleanDirectory(new File(MODS));
-				System.out.println("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
-				GPanel.setText("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
-				throw new CorruptedFileException("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods, veuillez relancer le launcher.");
+				Logger.info("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods et a vidé le dossier mods, veuillez relancer le launcher. NOTE : Cette erreur peut avoir lieu lors d'une mise à jour d'un ou plusieurs mods, pas d'affolement.");
+				GPanel.setText("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods et a vidé le dossier mods, veuillez relancer le launcher. NOTE : Cette erreur peut avoir lieu lors d'une mise à jour d'un ou plusieurs mods, pas d'affolement.");
+				throw new CorruptedFileException("Le launcher a trouve des fichiers malveillants ou corrompu dans le dossier mods et a vidé le dossier mods, veuillez relancer le launcher. NOTE : Cette erreur peut avoir lieu lors d'une mise à jour d'un ou plusieurs mods, pas d'affolement.");
 			}
 		}
-
-		ExternalLaunchProfile profile = MinecraftLauncher.createExternalProfile(INFOS, LAUNCH_DIR, authInfos);
-		ExternalLauncher launcher = new ExternalLauncher(profile);
-		
-		profile.getVmArgs().addAll(Arrays.asList(GPanel.getRamSelector().getRamArguments()));
+		reset();
 
 		Process p = launcher.launch();
 		Thread.sleep(5000L);
@@ -172,15 +194,16 @@ public final class Main
 	public static void exit(int status)
 	{
 		Logger.info("Exit with exit code " + status + ".");
-		File tempDir = new File(TEMP_DIR);
 		try
 		{
-			FileUtils.cleanDirectory(tempDir);
+			FileUtils.cleanDirectory(new File(TEMP_DIR));
 		} catch (IOException ignored) {}
 		if(!Downloader.FILE_NAME.isEmpty()) Downloader.FILE_NAME.clear();
 		if(!Downloader.LINK_OF_FILES.isEmpty()) Downloader.LINK_OF_FILES.clear();
 		if(!Downloader.OBJ_LINK_OF_FILES.isEmpty()) Downloader.OBJ_LINK_OF_FILES.clear();
 		if(!Downloader.OBJ_FILE_NAME.isEmpty()) Downloader.OBJ_FILE_NAME.clear();
+		if(Downloader.NUMBER_OF_FILES != 0) Downloader.NUMBER_OF_FILES = 0;
+		if(Downloader.OBJ_NUMBER_OF_FILES != 0) Downloader.OBJ_NUMBER_OF_FILES = 0;
 		System.exit(status);
 	}
 

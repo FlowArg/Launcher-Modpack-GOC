@@ -7,7 +7,9 @@ import fr.arinonia.launcherlib.updater.versions.AssetIndexInfo;
 import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.gui.GPanel;
 import fr.flowarg.launcher.sha1.SHA1Manager;
+import fr.flowarg.launcher.utils.Constants;
 import fr.flowarg.launcher.utils.Logger;
+import fr.theshark34.openlauncherlib.JavaUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -20,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static fr.flowarg.launcher.utils.Constants.*;
+import static fr.flowarg.launcher.utils.FileUtils.*;
 
-public final class Downloader
+public final class Downloader implements Constants
 {
 	public static List<String> LINK_OF_FILES = new ArrayList<>();
 	public static List<String> FILE_NAME = new ArrayList<>();
@@ -30,7 +32,9 @@ public final class Downloader
 	public static List<String> OBJ_FILE_NAME = new ArrayList<>();
 	public static int OBJ_NUMBER_OF_FILES = 0;
 	public static int NUMBER_OF_FILES = 0;
-	
+	public static int FILES_DOWNLOADED = 0;
+
+	@SuppressWarnings("deprecation")
 	public void init()
 	{
 		ll(Links.VERSIONS_INDEX);
@@ -121,6 +125,7 @@ public final class Downloader
 		ll(Links.MOD_NETHEREX);
 		ll(Links.MOD_LIBRARYEX);
         ll(Links.MOD_TOROHEALTH);
+        ll(Links.MOD_LAUNCHER_ADDON);
 		
 		NUMBER_OF_FILES = 0;
 		Logger.info("Initializing Libraries list...");
@@ -214,6 +219,7 @@ public final class Downloader
 		fl(Names.MOD_NETHEREX);
 		fl(Names.MOD_LIBRARYEX);
 		fl(Names.MOD_TOROHEALTH);
+		fl(Names.MOD_LAUNCHER_ADDON);
 
 		Logger.info("Initializing objects...");
 		InputStream stream = null;
@@ -297,7 +303,10 @@ public final class Downloader
 					FileUtils.copyURLToFile(website, new File(FILE_NAME.get(i)));
 					Logger.info("File : " + LINK_OF_FILES.get(i) + " has been downloaded at : " + FILE_NAME.get(i) + ".");
 					GPanel.setText("File : " + LINK_OF_FILES.get(i) + " has been downloaded at : " + FILE_NAME.get(i) + ".");
+					GPanel.setText("Verifying files...");
 				}
+				FILES_DOWNLOADED++;
+                GPanel.progressBar.update(GPanel.getInstance().getGraphics());
 			}
 			catch (IOException e)
 			{
@@ -309,23 +318,21 @@ public final class Downloader
 		LINK_OF_FILES.clear();
 		FILE_NAME.clear();
 		
-		Logger.info("All files are correctly downloaded.");
-		GPanel.setText("All files are correctly downloaded.");
+		Logger.info("All libraries and mods are correctly downloaded.");
+		GPanel.setText("All libraries and mods are correctly downloaded.");
 
 		GPanel.setText("Verifying objects...");
 		Logger.info("Verifying objects...");
-		this.downloadResources();
+		this.downloadMinecraftAssets();
 
+		Logger.info("Extracting natives...");
+		GPanel.setText("Extracting natives...");
 		String N1;
 		String N2;
 		String N3;
 
-		String N = NATIVES;
-
 		try
 		{
-			Logger.info("Extracting natives...");
-			GPanel.setText("Extracting natives...");
 			if(OS.toLowerCase().contains("win"))
 			{
 				N1 = Names.NATIVE_1_WIN;
@@ -334,10 +341,10 @@ public final class Downloader
 				File n1 = new File(N1);
 				File n2 = new File(N2);
 				File n3 = new File(N3);
-				fr.flowarg.launcher.utils.FileUtils.unzipJars(
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N1),
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N2),
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N3));
+				unzipJars(
+						new JarPath(NATIVES, N1),
+						new JarPath(NATIVES, N2),
+						new JarPath(NATIVES, N3));
 				if(!n1.delete()) n1.deleteOnExit();
 				if(!n2.delete()) n2.deleteOnExit();
 				if(!n3.delete()) n3.deleteOnExit();
@@ -348,9 +355,9 @@ public final class Downloader
 				N2 = Names.NATIVE_2_OSX;
 				File n1 = new File(N1);
 				File n2 = new File(N2);
-				fr.flowarg.launcher.utils.FileUtils.unzipJars(
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N1),
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N2));
+				unzipJars(
+						new JarPath(NATIVES, N1),
+						new JarPath(NATIVES, N2));
 				if(!n1.delete()) n1.deleteOnExit();
 				if(!n2.delete()) n2.deleteOnExit();
 			}
@@ -362,10 +369,10 @@ public final class Downloader
 				File n1 = new File(N1);
 				File n2 = new File(N2);
 				File n3 = new File(N3);
-				fr.flowarg.launcher.utils.FileUtils.unzipJars(
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N1),
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N2),
-						new fr.flowarg.launcher.utils.FileUtils.JarPath(N, N3));
+				unzipJars(
+						new JarPath(NATIVES, N1),
+						new JarPath(NATIVES, N2),
+						new JarPath(NATIVES, N3));
 				if(!n1.delete()) n1.deleteOnExit();
 				if(!n2.delete()) n2.deleteOnExit();
 				if(!n3.delete()) n3.deleteOnExit();
@@ -383,12 +390,64 @@ public final class Downloader
 			Main.CRASH_REPORTER.catchError(e, "Le launcher a rencontre une erreur lors de l'extraction des natives, relancez le launcher voir l'ordinateur complet. Si le soucis persistes, contactez moi sur Discord.");
 		}
 
+		Logger.info("Verifying Java Version");
+		GPanel.setText("Verifying Java Version");
+		String javaVersion = System.getProperty("sun.arch.data.model");
+		if(!javaVersion.contains("64"))
+		{
+			Logger.err("Java version isn't valid, downloading Java 64bits...");
+			GPanel.setText("Java version isn't valid, downloading Java 64bits...");
+			String os;
+
+			if(OS.toLowerCase().contains("mac")) os = "osx";
+			else if(OS.toLowerCase().contains("windows")) os = "windows";
+			else os = "linux";
+
+			try
+			{
+				File jreDir = new File(JRE_CUSTOM_DIR + "\\jre1.8.0_51\\");
+				if(!jreDir.exists() || getBytesOfADirectory(jreDir) <= 0)
+				{
+					final String urlStr = "http://51.77.196.230/launcher/beta-version/runtime/jre-8u51-" + os + "-x64.tar.gz";
+					final URL url = new URL(urlStr);
+					final File tarArchive = new File(TEMP_DIR + url.getFile());
+					final File dirDirection = new File(JRE_CUSTOM_DIR);
+
+					dirDirection.mkdirs();
+					Logger.info("Downloading " + url + "...");
+					GPanel.setText("Downloading " + url + "...");
+					FileUtils.copyURLToFile(url, tarArchive);
+					tarArchive.deleteOnExit();
+					Logger.info("Decompressing tar archive...");
+					GPanel.setText("Decompressing tar archive...");
+					decompressTarArchive(tarArchive, dirDirection);
+				}
+				Logger.info("Java is successfully installed, changing launch command...");
+				GPanel.setText("Java is successfully installed, changing launch command...");
+				String command;
+				if(OS.toLowerCase().contains("win")) command = "\"" + JRE_CUSTOM_DIR + "jre1.8.0_51/bin/java.exe\"";
+				else if(OS.toLowerCase().contains("mac")) command = "\"" + JRE_CUSTOM_DIR + "jre1.8.0_51/bin/java\"";
+				else command = "\"" + JRE_CUSTOM_DIR + "jre1.8.0_51/bin/java\"";
+				JavaUtil.setJavaCommand(command);
+			} catch (IOException e)
+			{
+				Main.CRASH_REPORTER.catchError(e, "Une erreur est survenue lors du téléchargement de l'extraction de java, consultez les log.");
+			}
+		}
+
+		else
+		{
+			Logger.info("Found a good Java 64bits, changing launch command...");
+			GPanel.setText("Found a good Java 64bits, changing launch command...");
+			JavaUtil.setJavaCommand("\"" + System.getProperty("java.home") + "\\bin\\java.exe\"");
+		}
+
 		Logger.info("All files are completely verified and downloaded !");
 		GPanel.setText("All files are completely verified and downloaded !");
 	}
 
 	@SuppressWarnings("deprecation")
-	private void downloadResources()
+	private void downloadMinecraftAssets()
 	{
 		InputStream stream = null;
 
@@ -425,9 +484,11 @@ public final class Downloader
 					GPanel.setText("Downloading : " + url + "...");
 					FileUtils.copyURLToFile(new URL(url), file);
 				}
+				FILES_DOWNLOADED++;
+                GPanel.progressBar.update(GPanel.getInstance().getGraphics());
 			}
 		}
-		catch (Exception ex)
+		catch (IOException ex)
 		{
 			Main.CRASH_REPORTER.catchError(ex, "Le launcher à rencontré une erreur lors du telechargement des assets du jeu. Veuillez verifiez votre connexion internet, relancer le jeu voir me contactez sur discord si ca persiste.");
 		}
@@ -443,7 +504,7 @@ public final class Downloader
 	public static boolean isFileValid(File file, File fileToDownload, String sha1) throws IOException
 	{
 		if(!isFileValid(file, fileToDownload)) return false;
-		else return sha1.equals(fr.flowarg.launcher.utils.FileUtils.getSHA1(file));
+		else return sha1.equals(getSHA1(file));
 	}
 
 	public static boolean isFileValid(File file, File fileToDownload) throws IOException
@@ -452,7 +513,7 @@ public final class Downloader
 		{
 			return false;
 		}
-		else if(file.exists() && fr.flowarg.launcher.utils.FileUtils.getFileSizeBytes(file).equals(fr.flowarg.launcher.utils.FileUtils.getFileSizeBytes(fileToDownload)))
+		else if(file.exists() && getFileSizeBytes(file).equals(getFileSizeBytes(fileToDownload)))
 		{
 			Logger.err("File : " + file + " exist but it's invalid ! Deleting it ! (Invalid size).");
 			if(!file.delete()) FileUtils.forceDelete(file);

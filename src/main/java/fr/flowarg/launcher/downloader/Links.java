@@ -2,10 +2,8 @@ package fr.flowarg.launcher.downloader;
 
 public final class Links
 {
-	private Links()
-	{
+	private Links() {}
 
-	}
 	public static final String VERSIONS_INDEX = "https://launchermeta.mojang.com/v1/packages/6e69e85d0f85f4f4b9e12dd99d102092a6e15918/1.12.2.json";
 	public static final String ASSETS_INDEX = "https://launchermeta.mojang.com/v1/packages/1584b57c1a0b5e593fad1f5b8f78536ca640547b/1.12.json";
 	
@@ -48,12 +46,13 @@ public final class Links
 	public static final String MOD_BIBLIOCRAFT = "https://media.forgecdn.net/files/2574/880/BiblioCraft%5bv2.4.5%5d%5bMC1.12.2%5d.jar";
 	public static final String MOD_CTM = "https://media.forgecdn.net/files/2832/564/CTM-MC1.12.2-1.0.1.30.jar";
 	public static final String MOD_IRONCHEST = "https://media.forgecdn.net/files/2747/935/ironchest-1.12.2-7.0.72.847.jar";
-	public static final String MOD_JOURNEY_MAP = "https://media.forgecdn.net/files/2755/458/journeymap-1.12.2-5.5.5.jar";
+	public static final String MOD_JOURNEY_MAP = "https://media.forgecdn.net/files/2844/789/journeymap-1.12.2-5.5.6.jar";
 	public static final String MOD_ICE_AND_FIRE = "https://media.forgecdn.net/files/2803/425/iceandfire-1.8.3.jar";
 	public static final String MOD_LLIBRARY = "https://media.forgecdn.net/files/2704/186/llibrary-1.7.19-1.12.2.jar";
 	public static final String MOD_NETHEREX = "https://media.forgecdn.net/files/2783/989/NetherEx-1.12.2-2.0.15.jar";
 	public static final String MOD_LIBRARYEX = "https://media.forgecdn.net/files/2803/288/LibraryEx-1.12.2-1.0.12.jar";
 	public static final String MOD_TOROHEALTH = "https://media.forgecdn.net/files/2483/817/torohealth-1.12.2-11.jar";
+	public static final String MOD_LAUNCHER_ADDON = "https://flowarg.github.io/minecraft/mods/LauncherAddon-1.12.2-0.1.0.jar";
 	public static final String FORGE = "https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.5.2847/forge-1.12.2-14.23.5.2847-universal.jar";
 	public static final String LAUNCHWRAPPER = "https://libraries.minecraft.net/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar";
 	public static final String ASM = "https://files.minecraftforge.net/maven/org/ow2/asm/asm-all/5.2/asm-all-5.2.jar";

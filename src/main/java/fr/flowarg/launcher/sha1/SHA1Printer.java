@@ -1,6 +1,7 @@
 package fr.flowarg.launcher.sha1;
 
 import fr.flowarg.launcher.downloader.Downloader;
+import fr.flowarg.launcher.utils.Constants;
 import fr.flowarg.launcher.utils.FileUtils;
 import fr.flowarg.launcher.utils.Logger;
 
@@ -10,10 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static fr.flowarg.launcher.utils.Constants.COMMON;
-import static fr.flowarg.launcher.utils.Constants.TEMP_DIR;
-
-public final class SHA1Printer
+public final class SHA1Printer implements Constants
 {
     public void printLibsSha1s() throws IOException
     {

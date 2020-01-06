@@ -1,3 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: fr.flowarg.launcher.Main
+Created-By: FlowArg (Flow Arg)
+Name: Launcher-Modpack-GOC
 

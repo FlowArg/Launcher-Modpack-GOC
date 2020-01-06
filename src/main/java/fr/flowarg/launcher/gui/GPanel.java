@@ -3,7 +3,6 @@ package fr.flowarg.launcher.gui;
 import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.gui.console.Console;
 import fr.flowarg.launcher.utils.Constants;
-import fr.flowarg.launcher.utils.CorruptedFileException;
 import fr.flowarg.launcher.utils.FileUtils;
 import fr.flowarg.launcher.utils.Logger;
 import fr.litarvan.openauth.AuthenticationException;
@@ -12,7 +11,6 @@ import fr.theshark34.openlauncherlib.util.Saver;
 import fr.theshark34.openlauncherlib.util.ramselector.RamSelector;
 import fr.theshark34.swinger.Swinger;
 import fr.theshark34.swinger.animation.Animator;
-import fr.theshark34.swinger.colored.SColoredBar;
 import fr.theshark34.swinger.event.SwingerEvent;
 import fr.theshark34.swinger.event.SwingerEventListener;
 import fr.theshark34.swinger.textured.STexturedButton;
@@ -25,15 +23,20 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import static fr.flowarg.launcher.downloader.Downloader.*;
+
 @SuppressWarnings("serial")
-public class GPanel extends JPanel implements SwingerEventListener
+public class GPanel extends JPanel implements SwingerEventListener, Constants
 {
+	private static GPanel instance;
 	private static STexturedButton playButton = new STexturedButton(Swinger.getResource("play.png"));
 	private static STexturedButton consoleButton = new STexturedButton(Swinger.getResource("console.png"));
 	private STexturedButton quitButton = new STexturedButton(Swinger.getResource("quit.png"));
 	private STexturedButton hideButton = new STexturedButton(Swinger.getResource("hide.png"));
 	
 	private static JLabel labelForBar = new JLabel("Clique sur play !", SwingConstants.CENTER);
+
+	public static JProgressBar progressBar = new JProgressBar(SwingConstants.HORIZONTAL);
 
 	private static Saver saver = new Saver(new File(Main.GAME_DIR, "launcher.properties"));
 	private static JTextField usernameField = new JTextField(saver.get("username"));
@@ -50,17 +53,18 @@ public class GPanel extends JPanel implements SwingerEventListener
 	
 	public GPanel()
 	{
+		instance = this;
 		this.setLayout(null);
 		
-		this.quitButton.setBounds((int)(4475 / 2.4), 5);
+		this.quitButton.setBounds((int)(4475 / 2.4), 16);
 		this.quitButton.setVisible(true);
 		
-		this.hideButton.setBounds((int)(4315 / 2.4), 5);
+		this.hideButton.setBounds((int)(4315 / 2.4), 16);
 		this.hideButton.setVisible(true);
 
-		ramButton.setText("Ram");
-		ramButton.setBounds(0, 60);
-		ramButton.setVisible(true);
+		GPanel.ramButton.setText("Ram");
+		GPanel.ramButton.setBounds(0, 71);
+		GPanel.ramButton.setVisible(true);
 		
 		GPanel.usernameField.setBounds((int)(3113 / 2.4), (int)(1466 / 3.2), (int)(1140 / 2.4), (int)(275 / 3.2));
 		this.setGood(usernameField);
@@ -70,20 +74,24 @@ public class GPanel extends JPanel implements SwingerEventListener
 		this.setGood(passwordField);
 		GPanel.passwordField.setVisible(true);
 
-		viewPassword.setBounds((int)(2983 / 2.4), (int)(2028 / 3.2));
-		viewPassword.setVisible(true);
+		GPanel.viewPassword.setBounds((int)(2983 / 2.4), (int)(2028 / 3.2));
+		GPanel.viewPassword.setVisible(true);
 		
 		GPanel.playButton.setBounds((int)(3203 / 2.4), (int)(2417 / 3.2));
 		GPanel.playButton.setVisible(true);
-		
-		consoleButton.setBounds(0, 0);
-		consoleButton.setVisible(true);
 
-		SColoredBar bar = new SColoredBar(Color.RED, Color.GREEN);
-		bar.setBounds(0, (int)(3446 / 3.2), (int)(4608 / 2.4), 11);
-		bar.setVisible(true);
-		
-		GPanel.labelForBar.setBounds(0, (int)(3300 / 3.2), (int)(4598 / 2.4), 48);
+		GPanel.consoleButton.setBounds(0, 11);
+		GPanel.consoleButton.setVisible(true);
+
+		GPanel.progressBar.setValue(0);
+		GPanel.progressBar.setStringPainted(true);
+		GPanel.progressBar.setBorder(null);
+		GPanel.progressBar.setMaximum(100);
+		GPanel.progressBar.setMinimum(0);
+		GPanel.progressBar.setBounds(0, (int)(3486 / 3.2), (int)(4608 / 2.4), 11);
+		GPanel.progressBar.setVisible(true);
+
+		GPanel.labelForBar.setBounds(0, (int)(3200 / 3.2), (int)(4598 / 2.4), 48);
 		GPanel.labelForBar.setFont(textFontBasic);
 		GPanel.labelForBar.setForeground(Color.YELLOW);
 		GPanel.labelForBar.setVisible(true);
@@ -91,29 +99,61 @@ public class GPanel extends JPanel implements SwingerEventListener
 		this.add(GPanel.playButton);
 		this.add(this.hideButton);
 		this.add(this.quitButton);
-		this.add(consoleButton);
+		this.add(GPanel.consoleButton);
 		this.add(GPanel.usernameField);
 		this.add(GPanel.passwordField);
-		this.add(bar);
-		this.add(ramButton);
+		this.add(GPanel.progressBar);
+		this.add(GPanel.ramButton);
 		this.add(GPanel.labelForBar);
-		this.add(viewPassword);
-		
-		consoleButton.addEventListener(this);
+		this.add(GPanel.viewPassword);
+
+		GPanel.consoleButton.addEventListener(this);
 		this.quitButton.addEventListener(this);
 		this.hideButton.addEventListener(this);
-		ramButton.addEventListener(this);
+		GPanel.ramButton.addEventListener(this);
 		GPanel.playButton.addEventListener(this);
-		viewPassword.addEventListener(this);
-		
+		GPanel.viewPassword.addEventListener(this);
+
 		this.setVisible(true);
 	}
-	
+
+	@Override
+	public void paint(Graphics g)
+	{
+		super.paint(g);
+		GPanel.progressBar.paint(this.getGraphics());
+		int i = getPercentToDownload();
+		GPanel.progressBar.setValue(i);
+		GPanel.progressBar.setString(i + "%");
+	}
+
+	public static GPanel getInstance()
+	{
+		return instance;
+	}
+
+	public static int getPercentToDownload()
+	{
+		return crossMult(FILES_DOWNLOADED, NUMBER_OF_FILES + OBJ_NUMBER_OF_FILES);
+	}
+	private static int crossMult(int value, int maximum)
+	{
+		/*
+		 *  ?  |100
+		 * --------
+		 * FD |NMBR + OBJ_NMBR
+		 */
+		return (int) ((double) value / (double) maximum * (double)100);
+	}
+
 	@Override
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
 		Swinger.drawFullsizedImage(g, this, background);
+		GPanel.progressBar.paint(g);
+		GPanel.progressBar.setValue(getPercentToDownload());
+		GPanel.progressBar.setString(getPercentToDownload() + "%");
 	}
 	
 	private void setGood(JTextField field)
@@ -211,9 +251,10 @@ public class GPanel extends JPanel implements SwingerEventListener
 		if (confirm == JOptionPane.OK_OPTION) {
 			try {
 				Main.auth(usernameField.getText(), passwordField.getText());
+				Logger.info("Vous avez été connecté avec succès");
 			} catch (AuthenticationException e) {
 				JOptionPane.showMessageDialog(GPanel.this, "Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.", "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
-				Logger.info("Erreur de connexion : Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.");
+				Logger.err("Erreur de connexion : Impossible de se connecter sur les serveurs d'authentification de Mojang, verifiez votre connexion internet, vos identifiants de connexion et de verifier si votre pare-feu ne bloque pas Mojang.");
 				GPanel.setFieldsEnabled(true);
 				return;
 			}
@@ -224,8 +265,8 @@ public class GPanel extends JPanel implements SwingerEventListener
 				if(downloadOptifine == JOptionPane.OK_OPTION)
 				{
 					Desktop.getDesktop().browse(new URL("https://optifine.net/adloadx?f=OptiFine_1.12.2_HD_U_F5.jar").toURI());
-					Desktop.getDesktop().open(new File(Constants.MODS));
-					File f = new File(Constants.TEMP_DIR + "installer Optifine.txt");
+					Desktop.getDesktop().open(new File(MODS));
+					File f = new File(TEMP_DIR + "installer Optifine.txt");
 					FileUtils.createFile(f);
 					FileUtils.saveFile(f, "Telechargez le fichier puis deplacez le fichier dans le dossier qui vient de s'ouvrir.");
 					Desktop.getDesktop().open(f);
@@ -240,7 +281,7 @@ public class GPanel extends JPanel implements SwingerEventListener
 			GPanel.setText("Launching game...");
 			try {
 				Main.launch();
-			} catch (LaunchException | InterruptedException | IOException | CorruptedFileException e)
+			} catch (LaunchException | InterruptedException | IOException e)
 			{
 				Main.CRASH_REPORTER.catchError(e, "Erreur pendant le lancement du jeu, veuillez essayer de relancer le launcher et de consulter les logs du launcher.");
 			}

@@ -2,6 +2,7 @@ package fr.flowarg.launcher.utils;
 
 import fr.flowarg.launcher.Main;
 
+@SuppressWarnings("unused")
 public interface Constants
 {
     String USER_HOME = System.getProperty("user.home") + "\\";
@@ -15,4 +16,6 @@ public interface Constants
     String ASSETS = COMMON + "assets\\";
     String OBJECTS = ASSETS + "objects\\";
     String OS = System.getProperty("os.name");
+    String JRE_CUSTOM_DIR = Main.GAME_DIR + "\\runtime\\x64\\";
+    String LAUNCHER_LOGS_DIR = Main.GAME_DIR + "\\launcher-log\\";
 }

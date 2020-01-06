@@ -4,6 +4,7 @@ import fr.flowarg.launcher.Main;
 import fr.flowarg.launcher.gui.updater.UFrame;
 import fr.flowarg.launcher.gui.updater.UPanel;
 import fr.flowarg.launcher.sha1.SHA1Manager;
+import fr.flowarg.launcher.utils.Constants;
 import fr.flowarg.launcher.utils.FileUtils;
 import fr.flowarg.launcher.utils.Logger;
 
@@ -12,9 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static fr.flowarg.launcher.utils.Constants.USER_HOME;
-
-public final class Updater
+public final class Updater implements Constants
 {
     public void start()
     {

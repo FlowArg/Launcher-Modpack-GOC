@@ -31,7 +31,7 @@ public final class Logger
     {
         message(true, message);
     }
-    public static void writeToTheLogFile(String toLog)
+    private static void writeToTheLogFile(String toLog)
     {
         try
         {
@@ -47,7 +47,7 @@ public final class Logger
             reader.close();
 
             String str = text.toString();
-            String toWrite = str + "\n" + toLog;
+            String toWrite = str + toLog;
             BufferedWriter writer = new BufferedWriter(new FileWriter(Main.LOG_FILE));
             writer.write(toWrite);
             writer.flush();

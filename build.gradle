@@ -11,33 +11,34 @@ compileJava {
 }
 
 group 'fr.flowarg'
-version '1.3.1'
+version '1.3.5'
 
 repositories {
 	jcenter()
 	mavenCentral()
 	maven
+			{
+				name = "FlowArg's maven"
+				url = "https://flowarg.github.io/maven/"
+			}
+	maven
 	{
 		name = "Litarvan maven"
 		url = "https://litarvan.github.io/maven/"
-	}
-	maven
-	{
-		name = "FlowArg's maven"
-		url = "https://flowarg.github.io/maven/"
 	}
 }
 
 dependencies {
 	compile 'com.google.code.gson:gson:2.8.0'
 	compile 'fr.litarvan:openauth:1.0.4'
-	compile 'fr.litarvan:openlauncherlib:3.0.4'
+	compile 'fr.litarvan:openlauncherlib:3.0.5-FLOWARGVERSION'
 	compile 'fr.theshark34.swinger:swinger:1.0.1-BETA'
 	compile 'commons-io:commons-io:2.6'
 	compile 'org.jetbrains:annotations:17.0.0'
 	compile 'org.apache.commons:commons-lang3:3.8.1'
 	compile 'fr.arinonia:launcherlib:1.0'
-	compile 'commons-codec:commons-codec:1.9'
+	compile 'org.codehaus.plexus:plexus-archiver:2.2'
+	compile 'org.json:json:20190722'
 }
 
 application {
